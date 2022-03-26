@@ -31,6 +31,7 @@ extern "C"
     int Length();
 };
 //卡牌的长度
+//初始的长度为0
 int List::Length()
 {
     List *p = this->next;
@@ -42,6 +43,7 @@ int List::Length()
     }
     return a;
 }
+//在链表的*末尾*插入一个卡牌的类型
 void List::Insert(Card a)
 {
     List *p;

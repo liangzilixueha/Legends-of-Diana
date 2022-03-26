@@ -61,7 +61,8 @@ void Draw()
         Card Q(0, 0, 0);
         Q = Head->val;
         window.draw(Q.Sprite);
-        Q.txtFollow();
+        //画HP
+        // Q.txtFollow();
         //下一个链表内容 
         Head = Head->next;
     }
