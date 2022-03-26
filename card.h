@@ -69,6 +69,8 @@ char *itoa(int num, char *str, int radix)
 }
 //宏定义的字体类型，可以重复使用
 sf::Font font;
+sf:Text hp_txt;
+
 //卡牌的类
 struct Card
 {
@@ -109,7 +111,6 @@ struct Card
     // 4 在你的《死亡》牌库中
     int state;
 
-    // Text hp_txt;
     // Text atk_txt;
     // Text brief_txt;
     // Text cost_txt;
