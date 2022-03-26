@@ -110,7 +110,6 @@ struct Card
     // 4 在你的《死亡》牌库中
     int state;
 
-
     // Text atk_txt;
     // Text brief_txt;
     // Text cost_txt;
@@ -194,19 +193,20 @@ Card::Card(int xx, int x, int y)
     moveFlag = 0;
     font.loadFromFile("wryh.ttf");
 
-    hp_txt.setFont(font);
+    // hp_txt.setFont(font);
     // atk_txt.setFont(font);
     // brief_txt.setFont(font);
     // cost_txt.setFont(font);
     // name_txt.setFont(font);
     char s[99];
-    hp_txt.setString(itoa(HP, s, 10));
+    // hp_txt.setString(itoa(HP, s, 10));
     // atk_txt.setString(itoa(HP, s, 10));
     // brief_txt.setString(itoa(HP, s, 10));
     // cost_txt.setString(itoa(HP, s, 10));
     // name_txt.setString(itoa(HP, s, 10));
 
-    hp_txt.setPosition(Sprite.getPosition());
+    // hp_txt.setPosition(Sprite.getPosition());
+
 }
 // 让你的卡牌跟随你的鼠标
 // 但是鼠标会在卡牌的*正中间*
