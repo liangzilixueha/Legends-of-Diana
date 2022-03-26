@@ -18,19 +18,19 @@ extern "C"
 #include "card.h"
     // macro define
 
-    // It has a NULL head;
+    //这个卡牌内容的链表具有一个
+    //**空的头指针*
     struct List
 {
     Card val;
+    //后继
     struct List *next;
+    //前躯
     struct List *prior;
     void Insert(Card);
     int Length();
 };
-///////////////////////////////
-//////////this is function/////
-///////////////////////////////
-
+//卡牌的长度
 int List::Length()
 {
     List *p = this->next;
