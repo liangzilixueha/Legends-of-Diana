@@ -97,7 +97,7 @@ struct Card
     // 4 is dead
     int state;
 
-    Text hp_txt;
+    // Text hp_txt;
     // Text atk_txt;
     // Text brief_txt;
     // Text cost_txt;
@@ -105,26 +105,26 @@ struct Card
     //这个函数是用来让你的文字
     //跟随！你的卡牌
     //包括卡牌的名字，血量，简介，消耗值，攻击力
-    void txtFollow()
-    {
-        char s[99];
-        font.loadFromFile("wryh.ttf");
+    // void txtFollow()
+    // {
+    //     char s[99];
+    //     font.loadFromFile("wryh.ttf");
 
-        hp_txt.setFont(font);
-        // atk_txt.setFont(font);
-        // brief_txt.setFont(font);
-        // cost_txt.setFont(font);
-        // name_txt.setFont(font);
+    //     hp_txt.setFont(font);
+    //     // atk_txt.setFont(font);
+    //     // brief_txt.setFont(font);
+    //     // cost_txt.setFont(font);
+    //     // name_txt.setFont(font);
 
-        hp_txt.setString(itoa(HP, s, 10));
-        // atk_txt.setString(itoa(HP, s, 10));
-        // brief_txt.setString(itoa(HP, s, 10));
-        // cost_txt.setString(itoa(HP, s, 10));
-        // name_txt.setString(itoa(HP, s, 10));
+    //     hp_txt.setString(itoa(HP, s, 10));
+    //     // atk_txt.setString(itoa(HP, s, 10));
+    //     // brief_txt.setString(itoa(HP, s, 10));
+    //     // cost_txt.setString(itoa(HP, s, 10));
+    //     // name_txt.setString(itoa(HP, s, 10));
 
-        hp_txt.setPosition(Sprite.getPosition());
-        window.draw(hp_txt);
-    }
+    //     hp_txt.setPosition(Sprite.getPosition());
+    //     window.draw(hp_txt);
+    // }
 };
 ///////////////////////////////
 //////////this is function/////
@@ -183,19 +183,19 @@ Card::Card(int xx, int x, int y)
     moveFlag = 0;
     font.loadFromFile("wryh.ttf");
 
-    hp_txt.setFont(font);
+    // hp_txt.setFont(font);
     // atk_txt.setFont(font);
     // brief_txt.setFont(font);
     // cost_txt.setFont(font);
     // name_txt.setFont(font);
     char s[99];
-    hp_txt.setString(itoa(HP, s, 10));
+    // hp_txt.setString(itoa(HP, s, 10));
     // atk_txt.setString(itoa(HP, s, 10));
     // brief_txt.setString(itoa(HP, s, 10));
     // cost_txt.setString(itoa(HP, s, 10));
     // name_txt.setString(itoa(HP, s, 10));
 
-    hp_txt.setPosition(Sprite.getPosition());
+    // hp_txt.setPosition(Sprite.getPosition());
 
 }
 // 让你的卡牌跟随你的鼠标

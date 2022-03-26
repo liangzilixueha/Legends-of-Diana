@@ -46,7 +46,7 @@ void Draw()
         Q = Head->val;
         window.draw(Q.Sprite);
         //画HP
-        Q.txtFollow();
+        // Q.txtFollow();
         //下一个链表内容 
         Head = Head->next;
     }
