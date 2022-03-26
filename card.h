@@ -22,6 +22,7 @@ extern "C"
 #define HEIGHT 1114
 sf::RenderWindow window(VideoMode(WIDTH, HEIGHT), "Legends of Diana");
 sf::Event event;
+//绝对值函数
 double fabs(double a)
 {
     if (a <= 0)
@@ -29,6 +30,8 @@ double fabs(double a)
     else
         return a;
 }
+//这个函数是将字符串改为数字
+//例如“156”->156
 char *itoa(int num, char *str, int radix)
 { /*索引表*/
     char index[] = "0123456789ABCDEF";
@@ -64,37 +67,46 @@ char *itoa(int num, char *str, int radix)
     }
     return str;
 }
+//宏定义的字体类型，可以重复使用
 sf::Font font;
+//卡牌的类
 struct Card
 {
+    //卡牌初始化的空函数
     Card() {}
     Card(int xx, int x, int y);
+
     int HP;
     int ATK;
     int Cost;
+    //战吼：当你使用时的效果
     int Battlecry;
+    //嘲讽：必须现攻击具有嘲讽的卡牌
     int Taunt;
+    //亡语：卡牌死亡后的效果
     int Deathrattle;
+    //圣盾：免疫一次伤害
     int Divien_Shield;
-    // The Img
+
     sf::Texture Texture;
-    // The Img
     sf::Sprite Sprite;
-    // Width is the Sprite's width,also the Height;
+
     double Width, Height;
+    // Hold是个0/1变量，用于标识卡牌是否被抓住
     int Hold;
     int isInclude();
     void setCardFollowMouse();
     void changeHold();
-
+    // moveFlag是个0/1变量，用于标识卡牌是否正在移动
+    // moveTo()函数中会使用此变量来判断移动的结束与否
     int moveFlag;
     void moveTo(double x, double y, double time = 3);
-    // state need a specific introduce
-    // 0 is in you room
-    // 1 is in you hand
-    // 2 is in mouse choosing
-    // 3 is fight
-    // 4 is dead
+    // state是一个 卡牌 的状态变量
+    // 0 在你的《卡牌库》中
+    // 1 在你的《手》中
+    // 2 在你的《选中》中
+    // 3 在你的《战斗》中
+    // 4 在你的《死亡》牌库中
     int state;
 
     // Text hp_txt;
@@ -102,6 +114,7 @@ struct Card
     // Text brief_txt;
     // Text cost_txt;
     // Text name_txt;
+
     //这个函数是用来让你的文字
     //跟随！你的卡牌
     //包括卡牌的名字，血量，简介，消耗值，攻击力
@@ -126,13 +139,8 @@ struct Card
     //     window.draw(hp_txt);
     // }
 };
-///////////////////////////////
-//////////this is function/////
-///////////////////////////////
-
-// this first is X,then is Y,the last is moving time,and the time is 0.3s for default
-// And 0.3s is 18;
-// OK,0.3s is useless ,plz don's use it ,it is not used in this function
+//这个是移动函数
+//其中time是移动的速度，*但是*，移动速度还没有写完全
 void Card::moveTo(double x, double y, double time)
 {
     double originalX, originalY;
@@ -151,8 +159,10 @@ void Card::moveTo(double x, double y, double time)
         moveFlag = 0;
     }
 }
-// 这是一个非常重要的函数
 // 这个函数返回的是0/1，判断鼠标的点击是否在卡牌的范围之内
+// 当你使用它之后，记得要改变你的
+//**Hold*
+//值
 int Card::isInclude()
 {
     Width = Texture.getSize().x;
@@ -169,7 +179,8 @@ int Card::isInclude()
         return 0;
     }
 }
-// 初始化你的卡牌
+// 初始化你的卡牌，参数的顺序是
+//费用，攻击力，血量
 Card::Card(int xx, int x, int y)
 {
     Cost = xx;
@@ -199,12 +210,13 @@ Card::Card(int xx, int x, int y)
 
 }
 // 让你的卡牌跟随你的鼠标
+// 但是鼠标会在卡牌的*正中间*
 void Card::setCardFollowMouse()
 {
     Card::Sprite.setPosition(sf::Mouse::getPosition(window).x - Width / 2, sf::Mouse::getPosition(window).y - Height / 2);
-    // printf("%f %f\n", Sprite.getPosition().x, Sprite.getPosition().y);
 }
 // 只是改变你的Hold值罢了
+//从0到1，从1到0
 void Card::changeHold()
 {
     if (Hold == 1)
@@ -212,6 +224,7 @@ void Card::changeHold()
     else
         Hold = 1;
 }
+//一个图片的结构体
 struct Img
 {
     sf::Texture Texture;
