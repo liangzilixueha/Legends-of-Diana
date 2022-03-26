@@ -13,7 +13,7 @@ file describe: none
 #ifdef __cplusplus // c++ include
 extern "C"
 #endif // include c++ file
-
+#include<string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <SFML/Graphics.hpp>
@@ -69,6 +69,7 @@ char *itoa(int num, char *str, int radix)
 }
 //宏定义的字体类型，可以重复使用
 sf::Font font;
+Text hp_txt;
 //卡牌的类
 struct Card
 {
@@ -109,7 +110,7 @@ struct Card
     // 4 在你的《死亡》牌库中
     int state;
 
-    Text hp_txt;
+
     // Text atk_txt;
     // Text brief_txt;
     // Text cost_txt;
@@ -128,7 +129,6 @@ struct Card
         // brief_txt.setFont(font);
         // cost_txt.setFont(font);
         // name_txt.setFont(font);
-
         hp_txt.setString(itoa(HP, s, 10));
         // atk_txt.setString(itoa(HP, s, 10));
         // brief_txt.setString(itoa(HP, s, 10));
@@ -218,6 +218,7 @@ void Card::setCardFollowMouse()
 //从0到1，从1到0
 void Card::changeHold()
 {
+    HP-=1;
     if (Hold == 1)
         Hold = 0;
     else
