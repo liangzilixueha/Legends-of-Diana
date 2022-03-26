@@ -13,7 +13,7 @@ file describe: none
 #ifdef __cplusplus // c++ include
 extern "C"
 #endif // include c++ file
-
+#include<string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <SFML/Graphics.hpp>
@@ -119,26 +119,25 @@ struct Card
     //这个函数是用来让你的文字
     //跟随！你的卡牌
     //包括卡牌的名字，血量，简介，消耗值，攻击力
-    // void txtFollow()
-    // {
-    //     char s[99];
-    //     font.loadFromFile("wryh.ttf");
+    void txtFollow()
+    {
+        char s[99];
+        font.loadFromFile("wryh.ttf");
 
-    //     hp_txt.setFont(font);
-    //     // atk_txt.setFont(font);
-    //     // brief_txt.setFont(font);
-    //     // cost_txt.setFont(font);
-    //     // name_txt.setFont(font);
+        hp_txt.setFont(font);
+        // atk_txt.setFont(font);
+        // brief_txt.setFont(font);
+        // cost_txt.setFont(font);
+        // name_txt.setFont(font);
+        hp_txt.setString(itoa(HP, s, 10));
+        // atk_txt.setString(itoa(HP, s, 10));
+        // brief_txt.setString(itoa(HP, s, 10));
+        // cost_txt.setString(itoa(HP, s, 10));
+        // name_txt.setString(itoa(HP, s, 10));
 
-    //     hp_txt.setString(itoa(HP, s, 10));
-    //     // atk_txt.setString(itoa(HP, s, 10));
-    //     // brief_txt.setString(itoa(HP, s, 10));
-    //     // cost_txt.setString(itoa(HP, s, 10));
-    //     // name_txt.setString(itoa(HP, s, 10));
-
-    //     hp_txt.setPosition(Sprite.getPosition());
-    //     window.draw(hp_txt);
-    // }
+        hp_txt.setPosition(Sprite.getPosition());
+        window.draw(hp_txt);
+    }
 };
 //这个是移动函数
 //其中time是移动的速度，*但是*，移动速度还没有写完全
@@ -220,6 +219,7 @@ void Card::setCardFollowMouse()
 //从0到1，从1到0
 void Card::changeHold()
 {
+    HP-=1;
     if (Hold == 1)
         Hold = 0;
     else
