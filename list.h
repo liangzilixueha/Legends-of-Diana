@@ -20,6 +20,7 @@ extern "C"
 
     //这个卡牌内容的链表具有一个
     //**空的头指针*
+    //双向链表
     struct List
 {
     Card val;
@@ -47,8 +48,6 @@ int List::Length()
 void List::Insert(Card a)
 {
     List *p;
-    sf::Font font;
-    font.loadFromFile("wryh.ttf");
     p = (List *)malloc(sizeof(List));
     p->next = NULL;
     p->prior = NULL;
@@ -60,8 +59,8 @@ void List::Insert(Card a)
         th = th->next;
     }
     th->next = p;
+    p->prior = th;
 }
-
 
 #ifdef __cpluscplus
 #endif
