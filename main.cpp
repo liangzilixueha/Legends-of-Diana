@@ -8,8 +8,6 @@ using namespace sf;
 //卡牌的效果
 //***************************//
 
-//正在选取卡片
-int isChooseCard = 0;
 //战斗的背景
 Img batter;
 //手中牌链表
@@ -19,7 +17,7 @@ List *CardinFight;
 //用来测试的无用链表
 List *Head;
 //测试例子1
-Card l(2, 2, 3, "Diana");
+Card l(2, 2, 3);
 //测试例子2
 Card p(1, 2, 3);
 //创建一个节点
@@ -35,7 +33,6 @@ List *creat(List *list)
 //开始初始化
 void Start()
 {
-    window.setFramerateLimit(60);
     //战斗背景的初始化
     batter.Texture.loadFromFile("img/batter.jpg");
     batter.Sprite.setTexture(batter.Texture);
@@ -47,47 +44,29 @@ void Start()
     p.Texture.loadFromFile("img/q.png");
     p.Sprite.setTexture(p.Texture);
     p.Sprite.setPosition(500, 500);
-    //手牌的初始化
-    CardHand = creat(CardHand);
+
+    CardHand=creat(CardHand);
     CardHand->Insert(l);
     CardHand->Insert(p);
-    //战斗卡牌的初始化
+    
     CardinFight = creat(CardinFight);
 }
 void Draw()
 {
     window.draw(batter.Sprite);
-    //绘画手牌
     Head = CardHand->next;
+    //绘画手牌
     while (Head)
     {
         Card Q(0, 0, 0);
         Q = Head->val;
         window.draw(Q.Sprite);
-        Q.txtFollow();
-        //下一个链表内容
+        //画HP
+        // Q.txtFollow();
+        //下一个链表内容 
         Head = Head->next;
     }
-    //绘画战斗卡牌
-    Head = CardinFight->next;
-    while (Head)
-    {
-        Card Q(0, 0, 0);
-        Q = Head->val;
-        window.draw(Q.Sprite);
-        Q.txtFollow();
-        //下一个链表内容
-        Head = Head->next;
-    }
-    //场景绘画线
-    CircleShape c(10);
-    for (int i = 0; i < 50; i++)
-    {
-        c.setPosition(i * WIDTH / 50, HEIGHT / 2);
-        window.draw(c);
-        c.setPosition(i * WIDTH / 50, HEIGHT * 2 / 3);
-        window.draw(c);
-    }
+    
     window.display();
 }
 int main()
@@ -104,7 +83,6 @@ int main()
             {
                 printf("Left is press\n");
                 Head = CardHand->next;
-                
                 // while (Head)
                 // {
                 //     // //如果鼠标在其中
@@ -149,32 +127,21 @@ int main()
                 while (Head)
                 {
                     if (Head->val.isInclude() && Head->val.Hold)
-                    {
                         Head->val.changeHold();
-                        Head->val.moveFlag = 1;
-                    }
                     Head = Head->next;
                 }
+                Head = CardHand->next;
             }
         }
         window.clear();
-
         Head = CardHand->next;
         while (Head)
         {
             if (Head->val.Hold)
-            {
                 Head->val.setCardFollowMouse();
-            }
-            Head = Head->next;
-        }
-        Head = CardHand->next;
-        while (Head)
-        {
-            if (Head->val.moveFlag)
-                Head->val.moveTo(500, 300);
             Head = Head->next;
         }
         Draw();
     }
 }
+    
