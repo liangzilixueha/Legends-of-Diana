@@ -83,12 +83,51 @@ int main()
             {
                 printf("Left is press\n");
                 Head = CardHand->next;
+<<<<<<< Updated upstream
                 while (Head)
                 {
                     if (Head->val.isInclude())
                         Head->val.changeHold();
                     Head = Head->next;
                 }
+=======
+                // while (Head)
+                // {
+                //     // //如果鼠标在其中
+                //     // if (Head->val.isInclude())
+                //     // {
+                //     //     if (isChooseCard)
+                //     //         isChooseCard = 0;
+                //     //     else
+                //     //         isChooseCard = 1;
+                //     //     if (isChooseCard)
+                //     //         Head->val.changeHold();
+                //     //     //如果卡牌被选中
+                //     //     if (Head->val.Hold)
+                //     //     {
+                //     //         //卡牌的Y坐标
+                //     //         double y = Head->val.Sprite.getPosition().y;
+                //     //         //如果卡牌位于敌方位置，回去
+                //     //         //如果卡牌位于自己的下方，回去
+                //     //         // else让卡牌从手牌移除，加入战斗卡牌列表
+                //     //         if (y < HEIGHT / 2 || y > HEIGHT * 2 / 3)
+                //     //         {
+                //     //             Head->val.moveFlag = 1;
+                //     //         }
+                //     //         else
+                //     //         {
+                //     //             //插入这个节点到战斗手牌中
+                //     //             CardinFight->Insert(Head->val);
+                //     //             //删除这个节点
+                //     //             Head->prior->next = Head->next;
+                //     //         }
+                //     //     }
+                //     //     //只要鼠标在卡牌的范围内，那每一次点击就必然会拿起一张卡牌或者放下一张卡牌
+                //     //     //如果卡牌被选中，那么就放下这张卡牌
+                //     //     //如果卡牌没有被选中，那么就拿起这张卡牌
+                //     Head = Head->next;
+                // }
+>>>>>>> Stashed changes
             }
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right)
             {
