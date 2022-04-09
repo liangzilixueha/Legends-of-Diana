@@ -13,7 +13,6 @@ file describe: none
 #ifdef __cplusplus // c++ include
 extern "C"
 #endif // include c++ file
-#include<string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <SFML/Graphics.hpp>
@@ -69,14 +68,15 @@ char *itoa(int num, char *str, int radix)
 }
 //宏定义的字体类型，可以重复使用
 sf::Font font;
-sf::Text hp_txt;
+//宏定义的文字类型，可以重复使用
+sf::Text text;
 
 //卡牌的类
 struct Card
 {
     //卡牌初始化的空函数
     Card() {}
-    Card(int xx, int x, int y);
+    Card(int, int, int, char *s = "test");
 
     int HP;
     int ATK;
@@ -102,46 +102,54 @@ struct Card
     // moveFlag是个0/1变量，用于标识卡牌是否正在移动
     // moveTo()函数中会使用此变量来判断移动的结束与否
     int moveFlag;
-    void moveTo(double x, double y, double time = 3);
+    void moveTo(double x, double y, double speed = 40);
     // state是一个 卡牌 的状态变量
     // 0 在你的《卡牌库》中
-    // 1 在你的《手》中
+    // 1 在你的《手牌》中
     // 2 在你的《选中》中
     // 3 在你的《战斗》中
     // 4 在你的《死亡》牌库中
     int state;
-
-    // Text atk_txt;
-    // Text brief_txt;
-    // Text cost_txt;
-    // Text name_txt;
-
-    //这个函数是用来让你的文字
-    //跟随！你的卡牌
-    //包括卡牌的名字，血量，简介，消耗值，攻击力
-    void txtFollow()
-    {
-        char s[99];
-        font.loadFromFile("wryh.ttf");
-
-        hp_txt.setFont(font);
-        // atk_txt.setFont(font);
-        // brief_txt.setFont(font);
-        // cost_txt.setFont(font);
-        // name_txt.setFont(font);
-        hp_txt.setString(itoa(HP, s, 10));
-        // atk_txt.setString(itoa(HP, s, 10));
-        // brief_txt.setString(itoa(HP, s, 10));
-        // cost_txt.setString(itoa(HP, s, 10));
-        // name_txt.setString(itoa(HP, s, 10));
-
-        hp_txt.setPosition(Sprite.getPosition());
-        window.draw(hp_txt);
-    }
+    char *name;
+    void txtFollow();
 };
+//这个函数是用来让你的文字
+//跟随！你的卡牌
+//包括卡牌的名字，血量，简介，消耗值，攻击力
+void Card::txtFollow()
+{
+    Width = Texture.getSize().x;
+    Height = Texture.getSize().y;
+
+    font.loadFromFile("wryh.ttf");
+    text.setFont(font);
+
+    char s[99];
+    //消耗值
+    text.setString(itoa(Cost, s, 10));
+    text.setPosition(Sprite.getPosition());
+    window.draw(text);
+    //攻击力
+    text.setString(itoa(ATK, s, 10));
+    text.setPosition(Sprite.getPosition().x, Sprite.getPosition().y + Height);
+    window.draw(text);
+    //血量
+    text.setString(itoa(HP, s, 10));
+    text.setPosition(Sprite.getPosition().x + Width, Sprite.getPosition().y + Height);
+    window.draw(text);
+    //名字
+    text.setString(name);
+    text.setCharacterSize(20);
+    text.setPosition(Sprite.getPosition().x + Width / 2 - 25, Sprite.getPosition().y + Height / 2);
+    window.draw(text);
+}
 //这个是移动函数
-//其中time是移动的速度，*但是*，移动速度还没有写完全
-void Card::moveTo(double x, double y, double time)
+//其中speed是移动速度，默认为40.数值越大越快
+// x是目标坐标X，y是目标坐标Y
+//**但是*，该函数依然有不完善的地方
+//当合法误差为1，而speed作产生的位移大于1时，就有距离目标的较大误差的结果
+//需要完善！！！
+void Card::moveTo(double x, double y, double speed)
 {
     double originalX, originalY;
     originalX = Sprite.getPosition().x;
@@ -150,9 +158,28 @@ void Card::moveTo(double x, double y, double time)
     speedX = (x - originalX);
     speedY = (y - originalY);
     double k = speedY / speedX;
-    if (fabs(x - originalX) > 1)
+    //当函数执行时，卡牌速度太快可能跳过判定区间从而无限往复运动
+    //为了解决这个问题，用两个为坐标的flag，判定只要有一次正负变化，就停止运动
+    int flagX, flagY;
+    if (x > originalX)
+        flagX = 1;
+    else
+        flagX = 0;
+    if (y > originalY)
+        flagY = 1;
+    else
+        flagY = 0;
+    if (fabs(x - originalX) > 0.1)
     {
-        Sprite.setPosition(originalX + fabs(speedX) / (speedX), originalY + fabs(speedX) / (speedX)*k);
+        Sprite.setPosition(originalX + speed * fabs(speedX) / (speedX), originalY + speed * fabs(speedX) / (speedX)*k);
+        if (flagX && x < Sprite.getPosition().x)
+            moveFlag = 0;
+        if (flagY && y < Sprite.getPosition().y)
+            moveFlag = 0;
+        if (!flagX && x > Sprite.getPosition().x)
+            moveFlag = 0;
+        if (!flagY && y > Sprite.getPosition().y)
+            moveFlag = 0;
     }
     else
     {
@@ -180,34 +207,21 @@ int Card::isInclude()
     }
 }
 // 初始化你的卡牌，参数的顺序是
-//费用，攻击力，血量
-Card::Card(int xx, int x, int y)
+//费用，攻击力，血量，名字(默认为test)
+//注意！名字不能有中文！
+Card::Card(int cost, int atk, int hp, char *namee)
 {
-    Cost = xx;
-    HP = y;
-    ATK = x;
+    Cost = cost;
+    HP = hp;
+    ATK = atk;
     Battlecry = 0;
     Taunt = 0;
     Deathrattle = 0;
     Divien_Shield = 0;
     Hold = 0;
     moveFlag = 0;
-    font.loadFromFile("wryh.ttf");
-
-    // hp_txt.setFont(font);
-    // atk_txt.setFont(font);
-    // brief_txt.setFont(font);
-    // cost_txt.setFont(font);
-    // name_txt.setFont(font);
-    char s[99];
-    // hp_txt.setString(itoa(HP, s, 10));
-    // atk_txt.setString(itoa(HP, s, 10));
-    // brief_txt.setString(itoa(HP, s, 10));
-    // cost_txt.setString(itoa(HP, s, 10));
-    // name_txt.setString(itoa(HP, s, 10));
-
-    // hp_txt.setPosition(Sprite.getPosition());
-
+    state = 0;
+    name = namee;
 }
 // 让你的卡牌跟随你的鼠标
 // 但是鼠标会在卡牌的*正中间*
@@ -219,7 +233,6 @@ void Card::setCardFollowMouse()
 //从0到1，从1到0
 void Card::changeHold()
 {
-    HP-=1;
     if (Hold == 1)
         Hold = 0;
     else
