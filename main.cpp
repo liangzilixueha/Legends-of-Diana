@@ -114,7 +114,7 @@ int main()
                 Head = CardHand;
                 while (Head->next)
                 {
-                   sss Head = Head->next;
+                    Head = Head->next;
                 }
                 if (isChooseCard == 0) //鼠标上没有被抓手牌
                 {
