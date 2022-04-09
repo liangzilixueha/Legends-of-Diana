@@ -21,6 +21,27 @@ extern "C"
 #define HEIGHT 1114
 sf::RenderWindow window(VideoMode(WIDTH, HEIGHT), "Legends of Diana");
 sf::Event event;
+//编写strcpy函数
+void strcpy(char *a, char *b)
+{
+    int i = 0;
+    while (b[i] != '\0')
+    {
+        a[i] = b[i];
+        i++;
+    }
+    a[i] = '\0';
+}
+//编写strlen函数
+int strlen(char *a)
+{
+    int i = 0;
+    while (a[i] != '\0')
+    {
+        i++;
+    }
+    return i;
+}
 //绝对值函数
 double fabs(double a)
 {
@@ -221,7 +242,9 @@ Card::Card(int cost, int atk, int hp, char *namee)
     Hold = 0;
     moveFlag = 0;
     state = 0;
-    name = namee;
+    //将名字赋值给name
+    name = new char[strlen(namee) + 1];
+    strcpy(name, namee);
 }
 // 让你的卡牌跟随你的鼠标
 // 但是鼠标会在卡牌的*正中间*

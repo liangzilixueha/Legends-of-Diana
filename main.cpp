@@ -88,6 +88,8 @@ void Draw()
         c.setPosition(i * WIDTH / 50, HEIGHT * 2 / 3);
         window.draw(c);
     }
+    c.setPosition(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+    window.draw(c);
     window.display();
 }
 int main()
@@ -99,82 +101,97 @@ int main()
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
+            {
                 window.close();
+            }
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
             {
                 printf("Left is press\n");
                 Head = CardHand->next;
-                
-                // while (Head)
-                // {
-                //     // //如果鼠标在其中
-                //     // if (Head->val.isInclude())
-                //     // {
-                //     //     if (isChooseCard)
-                //     //         isChooseCard = 0;
-                //     //     else
-                //     //         isChooseCard = 1;
-                //     //     if (isChooseCard)
-                //     //         Head->val.changeHold();
-                //     //     //如果卡牌被选中
-                //     //     if (Head->val.Hold)
-                //     //     {
-                //     //         //卡牌的Y坐标
-                //     //         double y = Head->val.Sprite.getPosition().y;
-                //     //         //如果卡牌位于敌方位置，回去
-                //     //         //如果卡牌位于自己的下方，回去
-                //     //         // else让卡牌从手牌移除，加入战斗卡牌列表
-                //     //         if (y < HEIGHT / 2 || y > HEIGHT * 2 / 3)
-                //     //         {
-                //     //             Head->val.moveFlag = 1;
-                //     //         }
-                //     //         else
-                //     //         {
-                //     //             //插入这个节点到战斗手牌中
-                //     //             CardinFight->Insert(Head->val);
-                //     //             //删除这个节点
-                //     //             Head->prior->next = Head->next;
-                //     //         }
-                //     //     }
-                //     //     //只要鼠标在卡牌的范围内，那每一次点击就必然会拿起一张卡牌或者放下一张卡牌
-                //     //     //如果卡牌被选中，那么就放下这张卡牌
-                //     //     //如果卡牌没有被选中，那么就拿起这张卡牌
-                //     Head = Head->next;
-                // }
-            }
-            if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right)
-            {
-                printf("Right is press\n");
-                Head = CardHand->next;
-                while (Head)
+                CardHand->print();
+                Head = CardHand;
+                while (Head->next)
                 {
-                    if (Head->val.isInclude() && Head->val.Hold)
-                    {
-                        Head->val.changeHold();
-                        Head->val.moveFlag = 1;
-                    }
                     Head = Head->next;
                 }
+                if (isChooseCard == 0) //鼠标上没有被抓手牌
+                {
+                    while (Head)
+                    {
+                        if (Head->val.isInclude())
+                        {
+                            Head->val.Hold = 1;
+                            break;
+                        }
+                        Head = Head->prior;
+                    }
+                }
             }
-        }
-        window.clear();
-
-        Head = CardHand->next;
-        while (Head)
-        {
-            if (Head->val.Hold)
+            if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right)
+                printf("Right is press\n");
+            Head = CardHand->next;
+            while (Head)
             {
-                Head->val.setCardFollowMouse();
+                if (Head->val.isInclude() && Head->val.Hold)
+                {
+                    Head->val.changeHold();
+                    Head->val.moveFlag = 1;
+                }
+                Head = Head->next;
             }
-            Head = Head->next;
         }
-        Head = CardHand->next;
-        while (Head)
+        if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
         {
-            if (Head->val.moveFlag)
-                Head->val.moveTo(500, 300);
-            Head = Head->next;
+            // printf("Left is release\n");
+            //当鼠标抓着手牌的时候↓
+            Head = CardHand->next;
+            while (Head)
+            {
+                Head->val.Hold = 0;
+                // if (sf::Mouse::getPosition().y >= HEIGHT / 2 && sf::Mouse::getPosition().y <= HEIGHT * 2 / 3)
+                if (Head->val.Sprite.getPosition().y >= HEIGHT / 2 && Head->val.Sprite.getPosition().y <= HEIGHT * 2 / 3)
+                {
+                    CardinFight->Insert(Head->val);
+                    printf("CardinFight:");
+                    CardinFight->print();
+                    if (Head->next == NULL)
+                    {
+                        Head->prior->next = NULL;
+                    }
+                    else if (Head->next->next == NULL)
+                    {
+                        Head->val = Head->next->val;
+                        Head->next = Head->next->next;
+                    }
+                    else
+                    {
+                        Head->val = Head->next->val;
+                        Head->next = Head->next->next;
+                        Head->next->prior = Head;
+                    }
+                }
+                Head = Head->next;
+            }
+            //当鼠标抓着手牌的时候↑
         }
-        Draw();
     }
+    window.clear();
+
+    Head = CardHand->next;
+    while (Head)
+    {
+        if (Head->val.Hold)
+        {
+            Head->val.setCardFollowMouse();
+        }
+        Head = Head->next;
+    }
+    Head = CardHand->next;
+    while (Head)
+    {
+        if (Head->val.moveFlag)
+            Head->val.moveTo(500, 300);
+        Head = Head->next;
+    }
+    Draw();
 }

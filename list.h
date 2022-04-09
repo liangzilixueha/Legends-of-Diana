@@ -30,6 +30,7 @@ extern "C"
     struct List *prior;
     void Insert(Card);
     int Length();
+    void print();
 };
 //卡牌的长度
 //初始的长度为0
@@ -61,7 +62,18 @@ void List::Insert(Card a)
     th->next = p;
     p->prior = th;
 }
-
+//输出这个链表的内容用名字
+void List::print()
+{
+    List *p = this->next;
+    printf("[");
+    while(p){
+        printf("\"%s\"",p->val.name);
+        if(p->next) printf(",");
+        p=p->next;
+    }
+    printf("]\n");
+}
 #ifdef __cpluscplus
 #endif
 #endif // end _LIST_H
