@@ -68,7 +68,7 @@ void List::print()
     List *p = this->next;
     printf("[");
     while(p){
-        printf("\"%s\"",p->val.name);
+        printf("\"%s\"",s1);
         if(p->next) printf(",");
         p=p->next;
     }

@@ -16,6 +16,7 @@ extern "C"
 #include <stdio.h>
 #include <stdlib.h>
 #include <SFML/Graphics.hpp>
+#include<fstream>
     using namespace sf;
 #define WIDTH 1920
 #define HEIGHT 1114
@@ -91,13 +92,16 @@ char *itoa(int num, char *str, int radix)
 sf::Font font;
 //宏定义的文字类型，可以重复使用
 sf::Text text;
+sf::String s1;
+std::basic_string<sf::Uint8> s2;
+std::basic_string<sf::Uint8> s3;
 
 //卡牌的类
 struct Card
 {
     //卡牌初始化的空函数
     Card() {}
-    Card(int, int, int, char *s = "test");
+    Card(int, int, int);
 
     int HP;
     int ATK;
@@ -131,7 +135,6 @@ struct Card
     // 3 在你的《战斗》中
     // 4 在你的《死亡》牌库中
     int state;
-    char *name;
     void txtFollow();
 };
 //这个函数是用来让你的文字
@@ -142,9 +145,10 @@ void Card::txtFollow()
     Width = Texture.getSize().x;
     Height = Texture.getSize().y;
 
-    font.loadFromFile("wryh.ttf");
+    font.loadFromFile("simsun.ttc");
     text.setFont(font);
-
+    printf("%s\n",s1.toAnsiString().c_str());
+    //printf("%s\n",s1);
     char s[99];
     //消耗值
     text.setString(itoa(Cost, s, 10));
@@ -159,7 +163,8 @@ void Card::txtFollow()
     text.setPosition(Sprite.getPosition().x + Width, Sprite.getPosition().y + Height);
     window.draw(text);
     //名字
-    text.setString(name);
+    
+    text.setString(s1);
     text.setCharacterSize(20);
     text.setPosition(Sprite.getPosition().x + Width / 2 - 25, Sprite.getPosition().y + Height / 2);
     window.draw(text);
@@ -230,7 +235,7 @@ int Card::isInclude()
 // 初始化你的卡牌，参数的顺序是
 //费用，攻击力，血量，名字(默认为test)
 //注意！名字不能有中文！
-Card::Card(int cost, int atk, int hp, char *namee)
+Card::Card(int cost, int atk, int hp)
 {
     Cost = cost;
     HP = hp;
@@ -243,8 +248,8 @@ Card::Card(int cost, int atk, int hp, char *namee)
     moveFlag = 0;
     state = 0;
     //将名字赋值给name
-    name = new char[strlen(namee) + 1];
-    strcpy(name, namee);
+    //name = new char[strlen(namee) + 1];
+    //strcpy(name, namee);
 }
 // 让你的卡牌跟随你的鼠标
 // 但是鼠标会在卡牌的*正中间*

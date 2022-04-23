@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "list.h"
+#include <iostream>
 #include "card.h"
 using namespace sf;
 //***************************//
@@ -19,9 +20,21 @@ List *CardinFight;
 //用来测试的无用链表
 List *Head;
 //测试例子1
-Card l(2, 2, 3, "Diana");
+Card l(2, 2, 3);
 //测试例子2
 Card p(1, 2, 3);
+//测试例子3
+Card q(1, 2, 3);
+//测试例子4
+Card r(1, 2, 3);
+//测试例子5
+Card s(1, 2, 3);
+//测试例子6
+Card t(1, 2, 3);
+//测试例子7
+Card u(1, 2, 3);
+//战斗区卡牌数量
+int FightCardNum = 0;
 //创建一个节点
 List *creat(List *list)
 {
@@ -47,10 +60,36 @@ void Start()
     p.Texture.loadFromFile("img/q.png");
     p.Sprite.setTexture(p.Texture);
     p.Sprite.setPosition(500, 500);
+    //卡牌测试3的初始化
+    q.Texture.loadFromFile("img/base.png");
+    q.Sprite.setTexture(l.Texture);
+    q.Sprite.setPosition(100, 100);
+    //卡牌测试4的初始化
+    r.Texture.loadFromFile("img/base.png");
+    r.Sprite.setTexture(l.Texture);
+    r.Sprite.setPosition(200, 200);
+    //卡牌测试5的初始化
+    s.Texture.loadFromFile("img/base.png");
+    s.Sprite.setTexture(l.Texture);
+    s.Sprite.setPosition(300, 300);
+    //卡牌测试6的初始化
+    t.Texture.loadFromFile("img/base.png");
+    t.Sprite.setTexture(l.Texture);
+    t.Sprite.setPosition(400, 400);
+    //卡牌测试7的初始化
+    u.Texture.loadFromFile("img/base.png");
+    u.Sprite.setTexture(l.Texture);
+    u.Sprite.setPosition(700, 500);
     //手牌的初始化
     CardHand = creat(CardHand);
     CardHand->Insert(l);
     CardHand->Insert(p);
+    CardHand->Insert(q);
+    CardHand->Insert(r);
+    CardHand->Insert(s);
+    CardHand->Insert(t);
+    CardHand->Insert(u);
+
     //战斗卡牌的初始化
     CardinFight = creat(CardinFight);
 }
@@ -73,12 +112,28 @@ void Draw()
     Head = CardinFight->next;
     while (Head)
     {
-        Card Q(0, 0, 0);
-        Q = Head->val;
-        window.draw(Q.Sprite);
-        Q.txtFollow();
-        //下一个链表内容
-        Head = Head->next;
+
+        for (int i = 1; i <= FightCardNum; i++)
+        {
+            Card Q(0, 0, 0);
+            Q = Head->val;
+            std::cout << FightCardNum << std::endl;
+            std::cout << "SPRITE" << Q.Sprite.getGlobalBounds().width << std::endl;
+            if (FightCardNum % 2 == 0)
+            {
+                Q.Sprite.setPosition(WIDTH / 2 - 210 * (FightCardNum / 2) - 10 + (i - 1) * 210, HEIGHT / 2);
+            }
+            else
+            {
+                Q.Sprite.setPosition(WIDTH / 2 - (FightCardNum / 2) * 210 - 95 + (i - 1) * 210, HEIGHT / 2);
+            }
+
+            // Q.Sprite.setPosition(WIDTH/2, HEIGHT/2);
+            window.draw(Q.Sprite);
+            Q.txtFollow();
+            //下一个链表内容
+            Head = Head->next;
+        }
     }
     //场景绘画线
     CircleShape c(10);
@@ -105,6 +160,10 @@ int main()
             {
                 window.close();
             }
+            if (event.type == sf::Event::EventType::TextEntered)
+            {
+                s1 += event.text.unicode;
+            }
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
             {
                 // printf("Left is press\n");
@@ -128,6 +187,36 @@ int main()
                         Head = Head->prior;
                     }
                 }
+
+                std::basic_ifstream<sf::Uint8> in;
+                std::basic_fstream<sf::Uint8> out("1234.txt");
+                // std::basic_ofstream<sf::Uint8> out("1234.txt");
+                if (!out.is_open())
+                {
+                    printf("open error\n");
+                }
+                else
+                {
+                    printf("open success\n");
+                }
+                s2 = s1.toUtf8();
+                // out.open("1234.txt");
+                printf("s2  %s\n", s2.c_str());
+                out.write(s2.c_str(), s2.length());
+                out >> s3;
+                printf("next%s__%s\n", s2, s3);
+                // printf("next%s\n", s3);
+                out.close();
+                // out.close();
+                // system("pause");
+                // return 0;
+                printf("s2  %s\n", s2);
+                in.open("1234.txt");
+                in >> s2;
+                in.close();
+                printf("next%s\n", s2);
+                s1.fromUtf8(s2.begin(), s2.end());
+                printf("s1%s\n", s1);
             }
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right)
             {
@@ -155,6 +244,7 @@ int main()
                     if (Head->val.Sprite.getPosition().y >= HEIGHT / 2 && Head->val.Sprite.getPosition().y <= HEIGHT * 2 / 3)
                     {
                         CardinFight->Insert(Head->val);
+                        FightCardNum++;
                         printf("CardinFight:");
                         CardinFight->print();
                         if (Head->next == NULL)
