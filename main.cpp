@@ -50,8 +50,10 @@ Card playerface(-99, -99, 9, "player");
 void LineTo(double x, double y)
 {
     isChooseCard = 2;
-    double mouseX = sf::Mouse::getPosition(window).x;
-    double mouseY = sf::Mouse::getPosition(window).y;
+    sf::Vector2i mouse = sf::Mouse::getPosition(window);
+    sf::Vector2f mouse_world = window.mapPixelToCoords(mouse);
+    double mouseX = mouse_world.x;
+    double mouseY = mouse_world.y;
     double dx = (mouseX - x) / 5000;
     double dy = (mouseY - y) / 5000;
     for (int i = 0; i < 5000; i++)
@@ -201,7 +203,9 @@ void Draw()
     }
     //绘制鼠标点，让你看的清楚
     CircleShape c(10);
-    c.setPosition(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+    sf::Vector2i mouse = sf::Mouse::getPosition(window);
+    sf::Vector2f mouse_world = window.mapPixelToCoords(mouse);
+    c.setPosition(mouse_world);
     window.draw(c);
 
     window.display();

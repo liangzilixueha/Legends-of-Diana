@@ -125,7 +125,7 @@ struct Card
 
     sf::Texture Texture;
     sf::Sprite Sprite;
-
+    Vector2i mousePoint;
     double Width, Height;
     // Hold是个0/1变量，用于标识卡牌是否被抓住
     int Hold;
@@ -254,9 +254,9 @@ int Card::isInclude()
 {
     Width = Texture.getSize().x;
     Height = Texture.getSize().y;
-    double x, y;
-    x = sf::Mouse::getPosition(window).x;
-    y = sf::Mouse::getPosition(window).y;
+    mousePoint = (Vector2i)window.mapPixelToCoords(Mouse::getPosition(window));
+    double x = mousePoint.x;
+    double y = mousePoint.y;
     if (x - Sprite.getPosition().x < Width && x - Sprite.getPosition().x > 0 && y - Sprite.getPosition().y < Height && y - Sprite.getPosition().y > 0)
     {
         return 1;
@@ -293,7 +293,8 @@ Card::Card(int cost, int atk, int hp, char *namee)
 // 但是鼠标会在卡牌的*正中间*
 void Card::setCardFollowMouse()
 {
-    Card::Sprite.setPosition(sf::Mouse::getPosition(window).x - Width / 2, sf::Mouse::getPosition(window).y - Height / 2);
+    mousePoint = (Vector2i)window.mapPixelToCoords(Mouse::getPosition(window));
+    Card::Sprite.setPosition(mousePoint.x - Width / 2, mousePoint.y - Height / 2);
 }
 // 只是改变你的Hold值罢了
 //从0到1，从1到0
