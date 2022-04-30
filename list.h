@@ -29,19 +29,19 @@ extern "C"
     //前躯
     struct List *prior;
     void Insert(Card);
-    int Length();
+    int length();
     void print();
 };
 //卡牌的长度
 //初始的长度为0
-int List::Length()
+int List::length()
 {
     List *p = this->next;
     int a = 0;
     while (p)
     {
         p = p->next;
-        a++;
+        ++a;
     }
     return a;
 }
@@ -67,10 +67,12 @@ void List::print()
 {
     List *p = this->next;
     printf("[");
-    while(p){
-        printf("\"%s\"",p->val.name);
-        if(p->next) printf(",");
-        p=p->next;
+    while (p)
+    {
+        printf("\"%s\"", p->val.name);
+        if (p->next)
+            printf(",");
+        p = p->next;
     }
     printf("]\n");
 }

@@ -6,7 +6,6 @@ date：2022.03.02
 auther：none
 file describe: none
 ***************************************/
-
 #ifndef _CARD_H_
 #define _CARD_H_
 
@@ -21,6 +20,19 @@ extern "C"
 #define HEIGHT 1114
 sf::RenderWindow window(VideoMode(WIDTH, HEIGHT), "Legends of Diana");
 sf::Event event;
+int stringcmp(const char *str1, const char *str2)
+{
+    int i = 0;
+    while (str1[i] != '\0' && str2[i] != '\0')
+    {
+        if (str1[i] != str2[i])
+        {
+            return str1[i] - str2[i];
+        }
+        i++;
+    }
+    return str1[i] - str2[i];
+}
 //编写strcpy函数
 void strcpy(char *a, char *b)
 {
@@ -133,30 +145,57 @@ struct Card
     int state;
     char *name;
     void txtFollow();
+    void setSprite(char *);
 };
+//由于我们不需要关注纹理的大小和位置，所以我们可以将其设置为默认值
+//如此以来，我们只需要设置一次，这样能减少赋值的次数
+void Card::setSprite(char *s)
+{
+    Texture.loadFromFile(s);
+    Sprite.setTexture(Texture);
+    Width = Texture.getSize().x;
+    Height = Texture.getSize().y;
+}
 //这个函数是用来让你的文字
 //跟随！你的卡牌
 //包括卡牌的名字，血量，简介，消耗值，攻击力
+// 参数：-99意味着绘制对应的文字
+// 4.23 让你的真正的图片跟随着主图片
 void Card::txtFollow()
 {
-    Width = Texture.getSize().x;
-    Height = Texture.getSize().y;
-
-    font.loadFromFile("wryh.ttf");
+    Width = Texture.getSize().x * Sprite.getScale().x;
+    Height = Texture.getSize().y * Sprite.getScale().y;
+    font.loadFromFile("yuanshen.ttf");
     text.setFont(font);
-
+    // 如果是头节点，那就别画画了
+    if (Cost == 0 && ATK == 0 && HP == 0)
+        return;
+    if (stringcmp(name, "chenrui") == 0 || !stringcmp(name, "player"))
+        text.setColor(sf::Color::Red);
+    else
+        text.setColor(sf::Color::White);
+    int txtsize = 40;
     char s[99];
     //消耗值
-    text.setString(itoa(Cost, s, 10));
-    text.setPosition(Sprite.getPosition());
-    window.draw(text);
+    if (Cost != -99)
+    {
+        text.setString(itoa(Cost, s, 10));
+        text.setPosition(Sprite.getPosition().x + 20, Sprite.getPosition().y + 5);
+        text.setCharacterSize(txtsize);
+        window.draw(text);
+    }
     //攻击力
-    text.setString(itoa(ATK, s, 10));
-    text.setPosition(Sprite.getPosition().x, Sprite.getPosition().y + Height);
-    window.draw(text);
+    if (ATK != -99)
+    {
+        text.setString(itoa(ATK, s, 10));
+        text.setPosition(Sprite.getPosition().x + 20, Sprite.getPosition().y + Height - 50);
+        text.setCharacterSize(txtsize);
+        window.draw(text);
+    }
     //血量
     text.setString(itoa(HP, s, 10));
-    text.setPosition(Sprite.getPosition().x + Width, Sprite.getPosition().y + Height);
+    text.setPosition(Sprite.getPosition().x + Width - 30, Sprite.getPosition().y + Height - 50);
+    text.setCharacterSize(txtsize);
     window.draw(text);
     //名字
     text.setString(name);
@@ -230,6 +269,7 @@ int Card::isInclude()
 // 初始化你的卡牌，参数的顺序是
 //费用，攻击力，血量，名字(默认为test)
 //注意！名字不能有中文！
+//当你的名字为"n"时，便不会绘制名字
 Card::Card(int cost, int atk, int hp, char *namee)
 {
     Cost = cost;
@@ -244,7 +284,10 @@ Card::Card(int cost, int atk, int hp, char *namee)
     state = 0;
     //将名字赋值给name
     name = new char[strlen(namee) + 1];
-    strcpy(name, namee);
+    if (namee[0] != 'n')
+        strcpy(name, namee);
+    else
+        strcpy(name, "");
 }
 // 让你的卡牌跟随你的鼠标
 // 但是鼠标会在卡牌的*正中间*
