@@ -11,6 +11,9 @@ using namespace sf;
 //如何添加一张卡牌->在全局初始化Card->在Start()中初始化卡牌的资源->插入卡牌
 
 //正在选取卡片
+// 参数说明：
+// 1：卡牌在手中被选取
+// 2：卡牌在战斗中被选取
 int isChooseCard = 0;
 //战斗的背景
 Img batter;
@@ -46,7 +49,7 @@ Card playerface(-99, -99, 9, "player");
 //画线函数,输入起点，目的是到光标
 void LineTo(double x, double y)
 {
-
+    isChooseCard = 2;
     double mouseX = sf::Mouse::getPosition(window).x;
     double mouseY = sf::Mouse::getPosition(window).y;
     double dx = (mouseX - x) / 5000;
@@ -84,7 +87,7 @@ void Start()
     //木人桩的初始化
     Tree.setSprite("img/img_card/base0.png");
     base1.setSprite("img/img_card/base1.png");
-    
+
     Base0.setSprite("img/img_card/base0.png");
     Base1.setSprite("img/img_card/base1.png");
     Base2.setSprite("img/img_card/base2.png");
@@ -295,7 +298,7 @@ void LeftReleased()
         Head = Head->next;
     }
     //打脸！！！
-    if (enemyface.isInclude())
+    if (enemyface.isInclude() && isChooseCard == 2)
         enemyface.HP -= Head1->val.ATK;
     if (enemyface.HP <= 0)
     {
@@ -360,6 +363,7 @@ void LeftReleased()
             Head->val.Hold = 0;
         Head = Head->next;
     }
+    isChooseCard = 0;
 }
 //右键单击
 void RightPress()
