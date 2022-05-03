@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <windows.h>
 #include "list.h"
 #include "card.h"
 #include <string.h>
@@ -46,6 +47,15 @@ Card deathcard(1, 1, 2, "n");
 //两张脸
 Card enemyface(-99, -99, 10, "chenrui");
 Card playerface(-99, -99, 9, "player");
+
+//游戏回合的摆设
+Img YRound;
+Img ERound;
+int IsYourRound = 1; //判断是否是您的回合
+Img YTurn;
+Img ETurn;
+Img GStart;
+
 //画线函数,输入起点，目的是到光标
 void LineTo(double x, double y)
 {
@@ -75,6 +85,13 @@ List *creat(List *list)
     list->val = Q;
     return list;
 }
+void Round(int IsYourRound)
+{
+    if (IsYourRound)
+        window.draw(YRound.Sprite);
+    else
+        window.draw(ERound.Sprite);
+}
 //开始初始化
 void Start()
 {
@@ -83,6 +100,28 @@ void Start()
     batter.Texture.loadFromFile("data/img/batter.jpg");
     batter.Sprite.setTexture(batter.Texture);
     batter.Sprite.setScale(2, 2);
+
+    // 初始化 Round 图标
+    YRound.Texture.loadFromFile("data/img/img_discord/YRound.PNG");
+    YRound.Sprite.setTexture(YRound.Texture);
+    YRound.Sprite.setPosition(1462, 380);
+    ERound.Texture.loadFromFile("data/img/img_discord/ERound.PNG");
+    ERound.Sprite.setTexture(ERound.Texture);
+    ERound.Sprite.setPosition(1462, 380);
+    // 初始化Round 开场动画
+    YTurn.Texture.loadFromFile("data/img/img_discord/YTurn.png");
+    YTurn.Sprite.setTexture(YTurn.Texture);
+    YTurn.Sprite.setPosition(710, 400);
+    YTurn.Sprite.setScale(2, 2);
+    ETurn.Texture.loadFromFile("data/img/img_discord/ETurn.png");
+    ETurn.Sprite.setTexture(ERound.Texture);
+    ETurn.Sprite.setPosition(710, 400);
+    ETurn.Sprite.setScale(2, 2);
+    GStart.Texture.loadFromFile("data/img/img_discord/GStart.png");
+    GStart.Sprite.setTexture(GStart.Texture);
+    GStart.Sprite.setPosition(710, 400);
+    GStart.Sprite.setScale(2, 2);
+
     //卡牌测试1的初始化
     l.Texture.loadFromFile("data/img/base.png");
     l.Sprite.setTexture(l.Texture);
@@ -127,11 +166,27 @@ void Start()
     playerface.setSprite("data/img/img_card/player.png");
     playerface.Sprite.setPosition(WIDTH / 2 - playerface.Width / 2 + 5, HEIGHT - playerface.Height * 2 - 10);
 }
+// 绘制基本场景
+void Initial_Draw()
+{
+    //绘制背景
+    window.draw(batter.Sprite);
+    Round(IsYourRound);
+    //画两个脸
+    window.draw(enemyface.Sprite);
+    window.draw(playerface.Sprite);
+    enemyface.txtFollow();
+    playerface.txtFollow();
+    window.draw(GStart.Sprite);
+    window.display();
+    Sleep(3000);
+}
 //绘画
 void Draw()
 {
     //绘制背景
     window.draw(batter.Sprite);
+    Round(IsYourRound);
     //画两个脸
     window.draw(enemyface.Sprite);
     window.draw(playerface.Sprite);
@@ -386,6 +441,7 @@ void RightPress()
 int main()
 {
     Start();
+    Initial_Draw();
     while (window.isOpen())
     {
         sf::Event event;
