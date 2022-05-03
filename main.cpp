@@ -80,24 +80,24 @@ void Start()
 {
     window.setFramerateLimit(60);
     //战斗背景的初始化
-    batter.Texture.loadFromFile("img/batter.jpg");
+    batter.Texture.loadFromFile("data/img/batter.jpg");
     batter.Sprite.setTexture(batter.Texture);
     batter.Sprite.setScale(2, 2);
     //卡牌测试1的初始化
-    l.Texture.loadFromFile("img/base.png");
+    l.Texture.loadFromFile("data/img/base.png");
     l.Sprite.setTexture(l.Texture);
     //木人桩的初始化
-    Tree.setSprite("img/img_card/base0.png");
-    base1.setSprite("img/img_card/base1.png");
+    Tree.setSprite("data/img/img_card/base0.png");
+    base1.setSprite("data/img/img_card/base1.png");
 
-    Base0.setSprite("img/img_card/base0.png");
-    Base1.setSprite("img/img_card/base1.png");
-    Base2.setSprite("img/img_card/base2.png");
-    Base3.setSprite("img/img_card/base3.png");
-    Base4.setSprite("img/img_card/base4.png");
-    Base5.setSprite("img/img_card/base5.png");
-    Base6.setSprite("img/img_card/base6.png");
-    Base7.setSprite("img/img_card/base7.png");
+    Base0.setSprite("data/img/img_card/base0.png");
+    Base1.setSprite("data/img/img_card/base1.png");
+    Base2.setSprite("data/img/img_card/base2.png");
+    Base3.setSprite("data/img/img_card/base3.png");
+    Base4.setSprite("data/img/img_card/base4.png");
+    Base5.setSprite("data/img/img_card/base5.png");
+    Base6.setSprite("data/img/img_card/base6.png");
+    Base7.setSprite("data/img/img_card/base7.png");
     //手牌的初始化
     CardHand = creat(CardHand);
     CardHand->Insert(Base0);
@@ -118,13 +118,13 @@ void Start()
 
     //死亡链表
     Dead = creat(Dead);
-    deathcard.setSprite("img/img_card/base2.png");
+    deathcard.setSprite("data/img/img_card/base2.png");
 
     //画两个脸
-    enemyface.setSprite("img/img_card/chengrui.png");
+    enemyface.setSprite("data/img/img_card/chengrui.png");
     enemyface.Sprite.setScale(1, 1);
     enemyface.Sprite.setPosition(WIDTH / 2 - enemyface.Width / 2 + 10, 110);
-    playerface.setSprite("img/img_card/player.png");
+    playerface.setSprite("data/img/img_card/player.png");
     playerface.Sprite.setPosition(WIDTH / 2 - playerface.Width / 2 + 5, HEIGHT - playerface.Height * 2 - 10);
 }
 //绘画
@@ -307,7 +307,7 @@ void LeftReleased()
     if (enemyface.HP <= 0)
     {
         Font font;
-        font.loadFromFile("yuanshen.ttf");
+        font.loadFromFile("./data/ttf/yuanshen.ttf");
         Text win;
         win.setString("You Win!");
         win.setFont(font);
