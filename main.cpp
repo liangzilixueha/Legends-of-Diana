@@ -476,7 +476,8 @@ int main()
                 window.close();
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
             {
-                if (event.mouseButton.x > 1462 && event.mouseButton.y > 380 && IsYourRound == 1)
+                if (event.mouseButton.x > 1470 && event.mouseButton.y > 390 &&
+                    event.mouseButton.x < 1800 && event.mouseButton.y < 600 && IsYourRound == 1)
                     IsPressed = true;
                 LeftPress();
             }
@@ -485,7 +486,8 @@ int main()
             if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
             {
 
-                if (event.mouseButton.x > 1462 && event.mouseButton.y > 380 && IsYourRound == 1)
+                if (event.mouseButton.x > 1480 && event.mouseButton.y > 390 &&
+                    event.mouseButton.x < 1800 && event.mouseButton.y < 600 && IsYourRound == 1)
                 {
                     IsPressed = false;
                     IsYourRound = 0;
