@@ -3,6 +3,7 @@
 #include "list.h"
 #include "card.h"
 #include <string.h>
+#include "button.h"
 using namespace sf;
 //***************************//
 //完成上牌，抽牌，取消选取，牌死亡
@@ -51,7 +52,8 @@ Card playerface(-99, -99, 9, "player");
 //游戏回合的摆设
 Img YRound;
 Img ERound;
-int IsYourRound = 1; //判断是否是您的回合
+int IsYourRound = 1;       //判断是否是您的回合
+bool IsRoundChange = true; //判断是否进行了回合的切换
 Img YTurn;
 Img ETurn;
 Img GStart;
@@ -181,6 +183,23 @@ void Initial_Draw()
     window.display();
     Sleep(3000);
 }
+// 改变回合方的提醒
+void Draw_Round()
+{
+    if (IsYourRound)
+    {
+        window.draw(YTurn.Sprite);
+        window.display();
+    }
+    else
+    {
+        window.draw(ETurn.Sprite);
+        window.display();
+    }
+    Sleep(3000);
+    IsRoundChange = false;
+}
+
 //绘画
 void Draw()
 {
@@ -478,5 +497,7 @@ int main()
             Head = Head->next;
         }
         Draw();
+        if (IsRoundChange)
+            Draw_Round();
     }
 }
