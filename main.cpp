@@ -122,7 +122,7 @@ void Start()
     YTurn.Sprite.setPosition(710, 400);
     YTurn.Sprite.setScale(2, 2);
     ETurn.Texture.loadFromFile("data/img/img_discord/ETurn.png");
-    ETurn.Sprite.setTexture(ERound.Texture);
+    ETurn.Sprite.setTexture(ETurn.Texture);
     ETurn.Sprite.setPosition(710, 400);
     ETurn.Sprite.setScale(2, 2);
     GStart.Texture.loadFromFile("data/img/img_discord/GStart.png");
@@ -202,7 +202,7 @@ void Draw_Round()
         window.draw(ETurn.Sprite);
         window.display();
     }
-    Sleep(3000);
+    Sleep(1500);
     IsRoundChange = false;
 }
 
@@ -491,6 +491,7 @@ int main()
                 {
                     IsPressed = false;
                     IsYourRound = 0;
+                    IsRoundChange = true;
                 }
                 LeftReleased();
             }
