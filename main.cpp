@@ -3,7 +3,7 @@
 #include "list.h"
 #include "card.h"
 #include <string.h>
-#include "button.h"
+
 using namespace sf;
 //***************************//
 //完成上牌，抽牌，取消选取，牌死亡
@@ -50,10 +50,11 @@ Card enemyface(-99, -99, 10, "chenrui");
 Card playerface(-99, -99, 9, "player");
 
 //游戏回合的摆设
-Img YRound;
-Img ERound;
+Img YRound, YRound_Down;
+Img ERound, ERound_Down;
 int IsYourRound = 1;       //判断是否是您的回合
 bool IsRoundChange = true; //判断是否进行了回合的切换
+bool IsPressed = false;    //按钮是否按了下去
 Img YTurn;
 Img ETurn;
 Img GStart;
@@ -89,8 +90,10 @@ List *creat(List *list)
 }
 void Round(int IsYourRound)
 {
-    if (IsYourRound)
+    if (IsYourRound && IsPressed == false)
         window.draw(YRound.Sprite);
+    else if (IsYourRound && IsPressed)
+        window.draw(YRound_Down.Sprite);
     else
         window.draw(ERound.Sprite);
 }
@@ -107,6 +110,9 @@ void Start()
     YRound.Texture.loadFromFile("data/img/img_discord/YRound.PNG");
     YRound.Sprite.setTexture(YRound.Texture);
     YRound.Sprite.setPosition(1462, 380);
+    YRound_Down.Texture.loadFromFile("data/img/img_discord/YRound_Down.PNG");
+    YRound_Down.Sprite.setTexture(YRound_Down.Texture);
+    YRound_Down.Sprite.setPosition(1462, 380);
     ERound.Texture.loadFromFile("data/img/img_discord/ERound.PNG");
     ERound.Sprite.setTexture(ERound.Texture);
     ERound.Sprite.setPosition(1462, 380);
@@ -469,11 +475,23 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+            {
+                if (event.mouseButton.x > 1462 && event.mouseButton.y > 380 && IsYourRound == 1)
+                    IsPressed = true;
                 LeftPress();
+            }
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right)
                 RightPress();
             if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
+            {
+
+                if (event.mouseButton.x > 1462 && event.mouseButton.y > 380 && IsYourRound == 1)
+                {
+                    IsPressed = false;
+                    IsYourRound = 0;
+                }
                 LeftReleased();
+            }
         }
         window.clear();
         //点击的函数，当你的Hold为1的时候
