@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-#include <windows.h>
 #include "list.h"
 #include "card.h"
 #include <string.h>
@@ -187,7 +186,8 @@ void Initial_Draw()
     playerface.txtFollow();
     window.draw(GStart.Sprite);
     window.display();
-    Sleep(3000);
+    //睡个3秒钟
+    sf::sleep(sf::seconds(1));
 }
 // 改变回合方的提醒
 void Draw_Round()
@@ -202,7 +202,7 @@ void Draw_Round()
         window.draw(ETurn.Sprite);
         window.display();
     }
-    Sleep(1500);
+    sf::sleep(sf::seconds(1));
     IsRoundChange = false;
 }
 
@@ -518,6 +518,11 @@ int main()
             Head = Head->next;
         }
         Draw();
+        if(!IsYourRound)
+        {
+            sf::sleep(sf::seconds(1));
+            IsYourRound=1;
+        }
         if (IsRoundChange)
             Draw_Round();
     }
