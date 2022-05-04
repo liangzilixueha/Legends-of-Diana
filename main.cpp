@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include "list.h"
 #include "card.h"
+#include "button.h"
 #include <string.h>
 
 using namespace sf;
@@ -48,12 +49,14 @@ Card deathcard(1, 1, 2, "n");
 Card enemyface(-99, -99, 10, "chenrui");
 Card playerface(-99, -99, 9, "player");
 
-//游戏回合的摆设
-Img YRound, YRound_Down;
-Img ERound, ERound_Down;
+//以下四个才是游戏按钮的定义
+//其中 ERound_Down没有被使用
+Button YRound, YRound_Down;
+Button ERound, ERound_Down;
 int IsYourRound = 1;       //判断是否是您的回合
 bool IsRoundChange = true; //判断是否进行了回合的切换
 bool IsPressed = false;    //按钮是否按了下去
+//游戏提示的大头标
 Img YTurn;
 Img ETurn;
 Img GStart;
@@ -104,29 +107,16 @@ void Start()
     batter.Texture.loadFromFile("data/img/batter.jpg");
     batter.Sprite.setTexture(batter.Texture);
     batter.Sprite.setScale(2, 2);
-
-    // 初始化 Round 图标
-    YRound.Texture.loadFromFile("data/img/img_discord/YRound.PNG");
-    YRound.Sprite.setTexture(YRound.Texture);
-    YRound.Sprite.setPosition(1462, 380);
-    YRound_Down.Texture.loadFromFile("data/img/img_discord/YRound_Down.PNG");
-    YRound_Down.Sprite.setTexture(YRound_Down.Texture);
-    YRound_Down.Sprite.setPosition(1462, 380);
-    ERound.Texture.loadFromFile("data/img/img_discord/ERound.PNG");
-    ERound.Sprite.setTexture(ERound.Texture);
-    ERound.Sprite.setPosition(1462, 380);
+    // 初始化Button图标
+    YRound.setSprite("data/img/img_discord/YRound.PNG",1462,380);
+    YRound_Down.setSprite("data/img/img_discord/YRound_Down.PNG",1462,380);
+    ERound.setSprite("data/img/img_discord/ERound.PNG",1462,380);
     // 初始化Round 开场动画
-    YTurn.Texture.loadFromFile("data/img/img_discord/YTurn.png");
-    YTurn.Sprite.setTexture(YTurn.Texture);
-    YTurn.Sprite.setPosition(710, 400);
+    YTurn.setSprite("data/img/img_discord/YTurn.png",710,400);
     YTurn.Sprite.setScale(2, 2);
-    ETurn.Texture.loadFromFile("data/img/img_discord/ETurn.png");
-    ETurn.Sprite.setTexture(ETurn.Texture);
-    ETurn.Sprite.setPosition(710, 400);
+    ETurn.setSprite("data/img/img_discord/ETurn.png",710,400);
     ETurn.Sprite.setScale(2, 2);
-    GStart.Texture.loadFromFile("data/img/img_discord/GStart.png");
-    GStart.Sprite.setTexture(GStart.Texture);
-    GStart.Sprite.setPosition(710, 400);
+    GStart.setSprite("data/img/img_discord/GStart.png",710,400);
     GStart.Sprite.setScale(2, 2);
 
     //卡牌测试1的初始化
