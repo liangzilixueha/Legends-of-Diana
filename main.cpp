@@ -51,7 +51,7 @@ Card playerface(-99, -99, 9, "player");
 //游戏回合的摆设
 Img YRound, YRound_Down;
 Img ERound, ERound_Down;
-int IsYourRound = 1;       //判断是否是您的回合
+bool IsYourRound = true;   //判断是否是您的回合
 bool IsRoundChange = true; //判断是否进行了回合的切换
 bool IsPressed = false;    //按钮是否按了下去
 Img YTurn;
@@ -212,11 +212,14 @@ void Draw()
     //绘制背景
     window.draw(batter.Sprite);
     Round(IsYourRound);
+
     //画两个脸
     window.draw(enemyface.Sprite);
     window.draw(playerface.Sprite);
     enemyface.txtFollow();
     playerface.txtFollow();
+    if (IsRoundChange)
+        Draw_Round();
     //绘画手牌
     Head = CardHand->next;
     while (Head)
@@ -477,7 +480,7 @@ int main()
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
             {
                 if (event.mouseButton.x > 1470 && event.mouseButton.y > 390 &&
-                    event.mouseButton.x < 1800 && event.mouseButton.y < 600 && IsYourRound == 1)
+                    event.mouseButton.x < 1800 && event.mouseButton.y < 600 && IsYourRound == true)
                     IsPressed = true;
                 LeftPress();
             }
@@ -487,10 +490,10 @@ int main()
             {
 
                 if (event.mouseButton.x > 1480 && event.mouseButton.y > 390 &&
-                    event.mouseButton.x < 1800 && event.mouseButton.y < 600 && IsYourRound == 1)
+                    event.mouseButton.x < 1800 && event.mouseButton.y < 600 && IsYourRound == true)
                 {
                     IsPressed = false;
-                    IsYourRound = 0;
+                    IsYourRound = false;
                     IsRoundChange = true;
                 }
                 LeftReleased();
@@ -517,13 +520,11 @@ int main()
                 Head->val.moveTo(500, 300);
             Head = Head->next;
         }
-        Draw();
         if(!IsYourRound)
         {
             sf::sleep(sf::seconds(1));
-            IsYourRound=1;
+            IsYourRound=true;
         }
-        if (IsRoundChange)
-            Draw_Round();
+        Draw();
     }
 }
