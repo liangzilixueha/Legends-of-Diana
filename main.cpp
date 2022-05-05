@@ -4,6 +4,9 @@
 #include "button.h"
 #include <string.h>
 
+#include <sstream>
+#include <ctime>
+
 using namespace sf;
 //***************************//
 //完成上牌，抽牌，取消选取，牌死亡
@@ -17,21 +20,23 @@ using namespace sf;
 // 1：卡牌在手中被选取
 // 2：卡牌在战斗中被选取
 int isChooseCard = 0;
-//战斗的背景
+// 战斗的背景
 Img batter;
-//死亡的链表，敌人和自己公用一个死亡的链表
+// 死亡的链表，敌人和自己公用一个死亡的链表
 List *Dead;
-//手中牌链表
+// 手中牌链表
 List *CardHand;
-//场上的战斗牌链表
+// 场上的战斗牌链表
 List *CardinFight;
-//敌人的战斗链表
+// 库中牌链表
+List *CardinHouse;
+// 敌人的战斗链表
 List *EnemyinFight;
-//用来测试的两个无用链表,
+// 用来测试的两个无用链表,
 List *Head, *Head1;
-//测试例子1
+// 测试例子1
 Card l(2, 2, 3, "Diana");
-//测试例子2
+// 测试例子2
 Card Base0(1, 2, 3, "n");
 Card Base1(1, 2, 3, "n");
 Card Base2(1, 2, 3, "n");
@@ -40,27 +45,48 @@ Card Base4(1, 2, 3, "n");
 Card Base5(1, 2, 3, "n");
 Card Base6(1, 2, 3, "n");
 Card Base7(1, 2, 3, "n");
-//敌人木人桩
+// 敌人木人桩
 Card Tree(1000, 1, 1000, "n");
 Card base1(1, 1, 5, "n");
-//亡语卡牌
+// 亡语卡牌
 Card deathcard(1, 1, 2, "n");
-//两张脸
+// 两张脸
 Card enemyface(-99, -99, 10, "chenrui");
 Card playerface(-99, -99, 9, "player");
 
-//游戏回合的摆设
+// 游戏回合的摆设
 Img YRound, YRound_Down;
 Img ERound, ERound_Down;
-bool IsYourRound = true;   //判断是否是您的回合
-bool IsRoundChange = true; //判断是否进行了回合的切换
-bool IsPressed = false;    //按钮是否按了下去
-//游戏提示的大头标
+bool IsYourRound;   //判断是否是您的回合
+bool IsRoundChange; //判断是否进行了回合的切换
+bool IsPressed;     //按钮是否按了下去
+int RoundCount;     // 回合计数
+
+// 游戏提示的大头标
 Img YTurn;
 Img ETurn;
 Img GStart;
 
-//画线函数,输入起点，目的是到光标
+//判定游戏的胜负
+bool isGameOver;
+
+//法力水晶
+Img Crystal;
+Img CrystalBG;
+Text num_c;
+Font font_c;
+int CrystalCount; //水晶数量计数
+
+//抽牌
+bool NeedNewCard;
+
+//声明关键模块
+
+void Draw();
+void Input();
+void Logic();
+
+// 画线函数,输入起点，目的是到光标
 void LineTo(double x, double y)
 {
     isChooseCard = 2;
@@ -79,7 +105,7 @@ void LineTo(double x, double y)
     }
     return;
 }
-//创建一个节点
+// 创建一个节点
 List *creat(List *list)
 {
     Card Q(0, 0, 0);
@@ -89,39 +115,45 @@ List *creat(List *list)
     list->val = Q;
     return list;
 }
-void Round(int IsYourRound)
+
+// 决定按钮的状态
+void Round()
 {
     if (IsYourRound && IsPressed == false)
         window.draw(YRound.Sprite);
     else if (IsYourRound && IsPressed)
         window.draw(YRound_Down.Sprite);
+    // 为修复bug被迫注释
+    /*
     else
         window.draw(ERound.Sprite);
+    */
 }
-//开始初始化
+
+// 开始初始化
 void Start()
 {
     window.setFramerateLimit(60);
-    //战斗背景的初始化
+    // 战斗背景的初始化
     batter.Texture.loadFromFile("data/img/batter.jpg");
     batter.Sprite.setTexture(batter.Texture);
     batter.Sprite.setScale(2, 2);
     // 初始化Button图标
-    YRound.setSprite("data/img/img_discord/YRound.PNG",1462,380);
-    YRound_Down.setSprite("data/img/img_discord/YRound_Down.PNG",1462,380);
-    ERound.setSprite("data/img/img_discord/ERound.PNG",1462,380);
+    YRound.setSprite("data/img/img_discord/YRound.PNG", 1462, 380);
+    YRound_Down.setSprite("data/img/img_discord/YRound_Down.PNG", 1462, 380);
+    ERound.setSprite("data/img/img_discord/ERound.PNG", 1462, 380);
     // 初始化Round 开场动画
-    YTurn.setSprite("data/img/img_discord/YTurn.png",710,400);
+    YTurn.setSprite("data/img/img_discord/YTurn.png", 710, 400);
     YTurn.Sprite.setScale(2, 2);
-    ETurn.setSprite("data/img/img_discord/ETurn.png",710,400);
+    ETurn.setSprite("data/img/img_discord/ETurn.png", 710, 400);
     ETurn.Sprite.setScale(2, 2);
-    GStart.setSprite("data/img/img_discord/GStart.png",710,400);
+    GStart.setSprite("data/img/img_discord/GStart.png", 710, 400);
     GStart.Sprite.setScale(2, 2);
 
-    //卡牌测试1的初始化
+    // 卡牌测试1的初始化
     l.Texture.loadFromFile("data/img/base.png");
     l.Sprite.setTexture(l.Texture);
-    //木人桩的初始化
+    // 木人桩的初始化
     Tree.setSprite("data/img/img_card/base0.png");
     base1.setSprite("data/img/img_card/base1.png");
 
@@ -133,51 +165,117 @@ void Start()
     Base5.setSprite("data/img/img_card/base5.png");
     Base6.setSprite("data/img/img_card/base6.png");
     Base7.setSprite("data/img/img_card/base7.png");
-    //手牌的初始化
+
+    // 牌库的初始化
+    CardinHouse = creat(CardinHouse);
+    srand((unsigned int)(time(NULL)));
+    int no;
+    for (int i = 0; i < 40; i++)
+    {
+        no = rand() % 7;
+        switch (no)
+        {
+        case 0:
+            CardinHouse->Insert(Base0);
+            break;
+        case 1:
+            CardinHouse->Insert(Base1);
+            break;
+        case 2:
+            CardinHouse->Insert(Base2);
+            break;
+        case 3:
+            CardinHouse->Insert(Base3);
+            break;
+        case 4:
+            CardinHouse->Insert(Base4);
+            break;
+        case 5:
+            CardinHouse->Insert(Base5);
+            break;
+        case 6:
+            CardinHouse->Insert(Base6);
+            break;
+        case 7:
+            CardinHouse->Insert(Base7);
+            break;
+        default:
+            break;
+        }
+    }
+    // 手牌的初始化
     CardHand = creat(CardHand);
-    CardHand->Insert(Base0);
-    CardHand->Insert(Base1);
-    CardHand->Insert(Base2);
-    CardHand->Insert(Base3);
-    CardHand->Insert(Base4);
-    CardHand->Insert(Base5);
-    CardHand->Insert(Base6);
     CardHand->Insert(Base7);
-    //战斗卡牌的初始化
+    // 战斗卡牌的初始化
     CardinFight = creat(CardinFight);
 
-    //敌人的木人桩
+    // 敌人的木人桩
     EnemyinFight = creat(EnemyinFight);
     EnemyinFight->Insert(Tree);
     EnemyinFight->Insert(base1);
 
-    //死亡链表
+    // 死亡链表
     Dead = creat(Dead);
     deathcard.setSprite("data/img/img_card/base2.png");
 
-    //画两个脸
+    //初始化布尔参数
+    IsYourRound = true;
+    IsRoundChange = true;
+    IsPressed = false;
+    isGameOver = false;
+    NeedNewCard = false;
+
+    //回合计数初始化
+    RoundCount = 1;
+
+    // 画两个脸(参数控制)
     enemyface.setSprite("data/img/img_card/chengrui.png");
     enemyface.Sprite.setScale(1, 1);
     enemyface.Sprite.setPosition(WIDTH / 2 - enemyface.Width / 2 + 10, 110);
     playerface.setSprite("data/img/img_card/player.png");
     playerface.Sprite.setPosition(WIDTH / 2 - playerface.Width / 2 + 5, HEIGHT - playerface.Height * 2 - 10);
+
+    // 法力水晶
+    Crystal.setSprite("data/img/img_discord/power.png");
+    Crystal.Sprite.setScale(0.7, 0.7);
+    CrystalBG.setSprite("data/img/img_discord/crystal_bg.png", 1208, 966);
+    CrystalBG.Sprite.setScale(2, 2);
+    CrystalCount = 1;
+
+    // 法力文字
+    font_c.loadFromFile("./data/ttf/yuanshen.ttf");
+    std::stringstream ss;
+    ss << CrystalCount << " / " << RoundCount;
+    num_c.setString(ss.str());
+    num_c.setFont(font);
+    num_c.setCharacterSize(20);
+    num_c.setColor(sf::Color::White);
+    num_c.setPosition(1251, 1017);
 }
 // 绘制基本场景
 void Initial_Draw()
 {
-    //绘制背景
+    // 绘制背景
     window.draw(batter.Sprite);
-    Round(IsYourRound);
-    //画两个脸
+    Round();
+    // 画两个脸
     window.draw(enemyface.Sprite);
     window.draw(playerface.Sprite);
     enemyface.txtFollow();
     playerface.txtFollow();
     window.draw(GStart.Sprite);
+    // 画法力水晶背景
+    window.draw(CrystalBG.Sprite);
+    window.draw(num_c);
+    // 画法力水晶
+    Crystal.Sprite.setPosition(1323, 1017);
+    window.draw(Crystal.Sprite);
+
     window.display();
-    //睡个3秒钟
+    // 睡个1秒钟
     sf::sleep(sf::seconds(1));
 }
+
 // 改变回合方的提醒
 void Draw_Round()
 {
@@ -189,40 +287,83 @@ void Draw_Round()
     else
     {
         window.draw(ETurn.Sprite);
+        window.draw(ERound.Sprite); // 用于修复按钮显示Bug
         window.display();
     }
-    sf::sleep(sf::seconds(1));
     IsRoundChange = false;
+    sf::sleep(sf::seconds(1));
+    Draw();
+    // 用于修复按钮显示Bug
+    if (!IsYourRound)
+    {
+        window.draw(ERound.Sprite);
+        window.display();
+    }
+    else
+    {
+        window.draw(YRound.Sprite);
+        window.display();
+    }
 }
 
-//绘画
+// 敌人的操作
+void Enemy_Action()
+{
+    sleep(3);
+    IsYourRound = true;
+    IsRoundChange = true;
+}
+
+// 绘画
 void Draw()
 {
-    //绘制背景
+    // 绘制背景
     window.draw(batter.Sprite);
-    Round(IsYourRound);
 
-    //画两个脸
+    // 判定按钮状态
+    Round();
+
+    // 画两个脸
     window.draw(enemyface.Sprite);
     window.draw(playerface.Sprite);
     enemyface.txtFollow();
     playerface.txtFollow();
-    if (IsRoundChange)
-        Draw_Round();
-    //绘画手牌
+
+    // 画法力水晶背景
+    window.draw(CrystalBG.Sprite);
+    window.draw(num_c);
+
+    //画法力水晶
+    for (int i = 0; i < CrystalCount; i++)
+    {
+        Crystal.Sprite.setPosition(1323 + i * 32, 1017);
+        window.draw(Crystal.Sprite);
+    }
+
+    // 绘画手牌
+    // 同时，规范手牌的位置
     Head = CardHand->next;
     while (Head)
     {
-        Card Q(0, 0, 0);
-        Q = Head->val;
-        window.draw(Q.Sprite);
-        Q.txtFollow();
-
-        //下一个链表内容
-        Head = Head->next;
+        for (int i = 1; i <= CardHand->length(); i++)
+        {
+            if (CardHand->length() % 2 == 0)
+            {
+                Head->val.Sprite.setPosition(WIDTH / 2 - 210 * (CardHand->length() / 2) - 10 + (i - 1) * 210, HEIGHT / 1.3);
+            }
+            else
+            {
+                Head->val.Sprite.setPosition(WIDTH / 2 - (CardHand->length() / 2) * 210 - 95 + (i - 1) * 210, HEIGHT / 1.3);
+            }
+            Card Q = Head->val;
+            window.draw(Q.Sprite);
+            Head->val.txtFollow();
+            // 下一个链表内容
+            Head = Head->next;
+        }
     }
-    //绘画战斗卡牌
-    //同时，规范战斗卡牌的位置
+    // 绘画战斗卡牌
+    // 同时，规范战斗卡牌的位置
     Head = CardinFight->next;
     while (Head)
     {
@@ -239,12 +380,12 @@ void Draw()
             Card Q = Head->val;
             window.draw(Q.Sprite);
             Head->val.txtFollow();
-            //下一个链表内容
+            // 下一个链表内容
             Head = Head->next;
         }
     }
-    //绘画敌人卡牌
-    //同时，规范敌人卡牌的位置
+    // 绘画敌人卡牌
+    // 同时，规范敌人卡牌的位置
     Head = EnemyinFight->next;
     while (Head)
     {
@@ -261,11 +402,11 @@ void Draw()
             Card Q = Head->val;
             window.draw(Q.Sprite);
             Head->val.txtFollow();
-            //下一个链表内容
+            // 下一个链表内容
             Head = Head->next;
         }
     }
-    //画点直线，为了战斗卡牌攻击对方服务，我们不会做特效
+    // 画点直线，为了战斗卡牌攻击对方服务，我们不会做特效
     Head = CardinFight;
     while (Head)
     {
@@ -273,26 +414,168 @@ void Draw()
             LineTo(Head->val.Sprite.getPosition().x + Head->val.Width / 2, Head->val.Sprite.getPosition().y + Head->val.Height / 2);
         Head = Head->next;
     }
-    //绘制鼠标点，让你看的清楚
+    // 绘制鼠标点，让你看的清楚
     CircleShape c(10);
     sf::Vector2i mouse = sf::Mouse::getPosition(window);
     sf::Vector2f mouse_world = window.mapPixelToCoords(mouse);
     c.setPosition(mouse_world);
     window.draw(c);
 
+    //绘制游戏结束画面
+    if (isGameOver)
+    {
+        Font font;
+        font.loadFromFile("./data/ttf/yuanshen.ttf");
+        Text win;
+        win.setString("You Win!");
+        win.setFont(font);
+        win.setCharacterSize(400);
+        win.setColor(sf::Color::Red);
+        window.draw(win);
+        window.display();
+        sf::sleep(sf::seconds(10));
+        window.clear();
+    }
+
+    // 判定回合改变
+    if (IsRoundChange)
+        Draw_Round();
+
     window.display();
 }
-//左键单击
+
+// 逻辑判断函数
+void Logic()
+{
+    // 更新法力水晶计数
+    std::stringstream ss;
+    ss << CrystalCount << " / " << RoundCount;
+    num_c.setString(ss.str());
+
+    //点击的函数，当你的Hold为1的时候
+    //让你的卡牌跟着你的鼠标
+    Head = CardHand->next;
+    while (Head)
+    {
+        if (Head->val.Hold)
+        {
+            Head->val.setCardFollowMouse();
+        }
+        Head = Head->next;
+    }
+
+    //卡牌移动函数的测试
+    //但是远远没有完善
+    Head = CardHand->next;
+    while (Head)
+    {
+        if (Head->val.moveFlag)
+            Head->val.moveTo(500, 300);
+        Head = Head->next;
+    }
+
+    // 运行敌人的操作和增加回合计数
+    if (!IsYourRound && !IsPressed)
+    {
+        Enemy_Action();
+        RoundCount++;
+        NeedNewCard = true;
+        if (CrystalCount < RoundCount)
+            CrystalCount++;
+    }
+
+    // 抽取新的牌
+    if (NeedNewCard)
+    {
+        // 从库中抽取牌
+        Head = CardinHouse->next;
+        while (Head && NeedNewCard)
+        {
+            // 将这个卡牌插入到手牌当中
+            if (CardHand->length() >= 4)
+                break;
+            CardHand->Insert(Head->val);
+            // 下面这一串都是为了将这个节点从牌库中删除
+            if (Head->next == NULL)
+            {
+                Head->prior->next = NULL;
+            }
+            else if (Head->next->next == NULL)
+            {
+                Head->val = Head->next->val;
+                Head->next = Head->next->next;
+            }
+            else
+            {
+                Head->val = Head->next->val;
+                Head->next = Head->next->next;
+                Head->next->prior = Head;
+            }
+            NeedNewCard = false;
+        }
+        Head = Head->next;
+    }
+
+    // 判定游戏胜负
+    if (enemyface.HP <= 0)
+    {
+        isGameOver = true;
+    }
+
+    // 判断*双方*卡牌死亡的问题
+    Head = CardinFight;
+    while (Head)
+    {
+        // 小心把头节点给删除了
+        if (Head->val.HP <= 0 && Head->val.Cost > 0)
+        {
+            if (strcmp(Head->val.name, "fff") == 0)
+            {
+                CardinFight->Insert(deathcard);
+                CardinFight->Insert(deathcard);
+            }
+
+            Dead->Insert(Head->val);
+            if (Head->next == NULL)
+                Head->prior->next = Head->next;
+            else
+            {
+                Head->next->prior = Head->prior;
+                Head->prior->next = Head->next;
+            }
+        }
+        Head = Head->next;
+    }
+    Head = EnemyinFight;
+    while (Head)
+    {
+        // 小心把头节点给删除了
+        if (Head->val.HP <= 0 && Head->val.Cost > 0)
+        {
+            Dead->Insert(Head->val);
+            if (Head->next == NULL)
+                Head->prior->next = Head->next;
+            else
+            {
+                Head->next->prior = Head->prior;
+                Head->prior->next = Head->next;
+            }
+        }
+        Head = Head->next;
+    }
+}
+
+// 左键单击
 void LeftPress()
 {
-    //确保你只能选择一个卡牌，且是最上面的卡牌
-    //最上面的卡牌：即最后绘制的卡牌
+    // 确保你只能选择一个卡牌，且是最上面的卡牌
+    // 最上面的卡牌：即最后绘制的卡牌
     Head = CardHand;
     while (Head->next)
     {
         Head = Head->next;
     }
-    if (isChooseCard == 0) //鼠标上没有被抓手牌
+    if (isChooseCard == 0) // 鼠标上没有被抓手牌
     {
         while (Head)
         {
@@ -304,8 +587,8 @@ void LeftPress()
             Head = Head->prior;
         }
     }
-    //战斗卡牌点击后，产生面对敌方的预攻击直线
-    //这里Hold=1之后会在Draw()里面调用LineTo()函数
+    // 战斗卡牌点击后，产生面对敌方的预攻击直线
+    // 这里Hold=1之后会在Draw()里面调用LineTo()函数
     Head = CardinFight;
     while (Head)
     {
@@ -317,10 +600,10 @@ void LeftPress()
         Head = Head->next;
     }
 }
-//左键释放
+// 左键释放
 void LeftReleased()
 {
-    //当鼠标抓着手牌的时候↓
+    // 当鼠标抓着手牌的时候↓
     Head = CardHand->next;
     while (Head)
     {
@@ -333,7 +616,7 @@ void LeftReleased()
             if (CardinFight->length() >= 7)
                 break;
             CardinFight->Insert(Head->val);
-            //下面这一串都是为了将这个节点从手牌中删除
+            // 下面这一串都是为了将这个节点从手牌中删除
             if (Head->next == NULL)
             {
                 Head->prior->next = NULL;
@@ -373,65 +656,10 @@ void LeftReleased()
         }
         Head = Head->next;
     }
-    //打脸！！！
+    // 打脸！！！
     if (enemyface.isInclude() && isChooseCard == 2)
         enemyface.HP -= Head1->val.ATK;
-    if (enemyface.HP <= 0)
-    {
-        Font font;
-        font.loadFromFile("./data/ttf/yuanshen.ttf");
-        Text win;
-        win.setString("You Win!");
-        win.setFont(font);
-        win.setCharacterSize(400);
-        win.setColor(sf::Color::Red);
-        window.draw(win);
-        window.display();
-        sf::sleep(sf::seconds(10));
-        window.clear();
-    }
-    //判断*双方*卡牌死亡的问题
-    Head = CardinFight;
-    while (Head)
-    {
-        //小心把头节点给删除了
-        if (Head->val.HP <= 0 && Head->val.Cost > 0)
-        {
-            if (strcmp(Head->val.name, "fff") == 0)
-            {
-                CardinFight->Insert(deathcard);
-                CardinFight->Insert(deathcard);
-            }
-
-            Dead->Insert(Head->val);
-            if (Head->next == NULL)
-                Head->prior->next = Head->next;
-            else
-            {
-                Head->next->prior = Head->prior;
-                Head->prior->next = Head->next;
-            }
-        }
-        Head = Head->next;
-    }
-    Head = EnemyinFight;
-    while (Head)
-    {
-        //小心把头节点给删除了
-        if (Head->val.HP <= 0 && Head->val.Cost > 0)
-        {
-            Dead->Insert(Head->val);
-            if (Head->next == NULL)
-                Head->prior->next = Head->next;
-            else
-            {
-                Head->next->prior = Head->prior;
-                Head->prior->next = Head->next;
-            }
-        }
-        Head = Head->next;
-    }
-    //当鼠标抓着手牌的时候↑
+    // 当鼠标抓着手牌的时候↑
     Head = CardinFight;
     while (Head)
     {
@@ -441,7 +669,7 @@ void LeftReleased()
     }
     isChooseCard = 0;
 }
-//右键单击
+// 右键单击
 void RightPress()
 {
     Head = CardHand->next;
@@ -455,65 +683,53 @@ void RightPress()
         Head = Head->next;
     }
 }
+
+// 输入函数
+void Input()
+{
+    sf::Event event;
+    while (window.pollEvent(event))
+    {
+        if (event.type == sf::Event::Closed)
+            window.close();
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+        {
+            if (event.mouseButton.x > 1470 && event.mouseButton.y > 390 &&
+                event.mouseButton.x < 1800 && event.mouseButton.y < 600 && IsYourRound == true)
+                IsPressed = true;
+            LeftPress();
+        }
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right)
+            RightPress();
+        if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
+        {
+
+            if (event.mouseButton.x > 1480 && event.mouseButton.y > 390 &&
+                event.mouseButton.x < 1800 && event.mouseButton.y < 600 && IsYourRound == true)
+            {
+                IsPressed = false;
+                IsYourRound = false;
+                IsRoundChange = true;
+            }
+            LeftReleased();
+        }
+    }
+}
+
 int main()
 {
     Start();
     Initial_Draw();
+
+    // 游戏主循环
     while (window.isOpen())
     {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-                window.close();
-            if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
-            {
-                if (event.mouseButton.x > 1470 && event.mouseButton.y > 390 &&
-                    event.mouseButton.x < 1800 && event.mouseButton.y < 600 && IsYourRound == true)
-                    IsPressed = true;
-                LeftPress();
-            }
-            if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right)
-                RightPress();
-            if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
-            {
-
-                if (event.mouseButton.x > 1480 && event.mouseButton.y > 390 &&
-                    event.mouseButton.x < 1800 && event.mouseButton.y < 600 && IsYourRound == true)
-                {
-                    IsPressed = false;
-                    IsYourRound = false;
-                    IsRoundChange = true;
-                }
-                LeftReleased();
-            }
-        }
         window.clear();
-        //点击的函数，当你的Hold为1的时候
-        //让你的卡牌跟着你的鼠标
-        Head = CardHand->next;
-        while (Head)
-        {
-            if (Head->val.Hold)
-            {
-                Head->val.setCardFollowMouse();
-            }
-            Head = Head->next;
-        }
-        //卡牌移动函数的测试
-        //但是远远没有完善
-        Head = CardHand->next;
-        while (Head)
-        {
-            if (Head->val.moveFlag)
-                Head->val.moveTo(500, 300);
-            Head = Head->next;
-        }
-        if(!IsYourRound)
-        { 
-            sf::sleep(sf::seconds(1));
-            IsYourRound=true;
-        }
+
+        Input();
+
         Draw();
+
+        Logic();
     }
 }
