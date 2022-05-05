@@ -165,7 +165,7 @@ void Card::txtFollow()
 {
     Width = Texture.getSize().x * Sprite.getScale().x;
     Height = Texture.getSize().y * Sprite.getScale().y;
-    font.loadFromFile("yuanshen.ttf");
+    font.loadFromFile("data/ttf/yuanshen.ttf");
     text.setFont(font);
     // 如果是头节点，那就别画画了
     if (Cost == 0 && ATK == 0 && HP == 0)

@@ -124,10 +124,10 @@ void Round()
     else if (IsYourRound && IsPressed)
         window.draw(YRound_Down.Sprite);
     // 为修复bug被迫注释
-    /*
+    
     else
         window.draw(ERound.Sprite);
-    */
+    
 }
 
 // 开始初始化
@@ -243,7 +243,7 @@ void Start()
     CrystalCount = 1;
 
     // 法力文字
-    font_c.loadFromFile("./data/ttf/yuanshen.ttf");
+    font_c.loadFromFile("data/ttf/yuanshen.ttf");
     std::stringstream ss;
     ss << CrystalCount << " / " << RoundCount;
     num_c.setString(ss.str());
@@ -425,7 +425,7 @@ void Draw()
     if (isGameOver)
     {
         Font font;
-        font.loadFromFile("./data/ttf/yuanshen.ttf");
+        font.loadFromFile("data/ttf/yuanshen.ttf");
         Text win;
         win.setString("You Win!");
         win.setFont(font);
