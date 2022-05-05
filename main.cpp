@@ -309,7 +309,7 @@ void Draw_Round()
 // 敌人的操作
 void Enemy_Action()
 {
-    sleep(3);
+    sf::sleep(sf::seconds(3));
     IsYourRound = true;
     IsRoundChange = true;
 }
