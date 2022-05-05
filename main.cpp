@@ -123,11 +123,8 @@ void Round()
         window.draw(YRound.Sprite);
     else if (IsYourRound && IsPressed)
         window.draw(YRound_Down.Sprite);
-    // 为修复bug被迫注释
-    
     else
         window.draw(ERound.Sprite);
-    
 }
 
 // 开始初始化
