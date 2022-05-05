@@ -306,7 +306,7 @@ void Draw_Round()
 // 敌人的操作
 void Enemy_Action()
 {
-    sf::sleep(sf::seconds(3));
+    sf::sleep(sf::seconds(1));
     IsYourRound = true;
     IsRoundChange = true;
 }
@@ -342,6 +342,8 @@ void Draw()
     Head = CardHand->next;
     while (Head)
     {
+        if (isChooseCard == 1)
+            break;
         for (int i = 1; i <= CardHand->length(); i++)
         {
             if (CardHand->length() % 2 == 0)
@@ -352,6 +354,17 @@ void Draw()
             {
                 Head->val.Sprite.setPosition(WIDTH / 2 - (CardHand->length() / 2) * 210 - 95 + (i - 1) * 210, HEIGHT / 1.3);
             }
+            Card Q = Head->val;
+            window.draw(Q.Sprite);
+            Head->val.txtFollow();
+            // 下一个链表内容
+            Head = Head->next;
+        }
+    }
+    if (isChooseCard == 1)
+    {
+        for (int i = 1; i <= CardHand->length(); i++)
+        {
             Card Q = Head->val;
             window.draw(Q.Sprite);
             Head->val.txtFollow();
@@ -579,6 +592,7 @@ void LeftPress()
             if (Head->val.isInclude())
             {
                 Head->val.Hold = 1;
+                isChooseCard = 1;
                 break;
             }
             Head = Head->prior;
