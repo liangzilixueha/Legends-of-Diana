@@ -146,6 +146,9 @@ struct Card
     char *name;
     void txtFollow();
     void setSprite(char *);
+
+    //攻击次数
+    int attackTimes;
 };
 //由于我们不需要关注纹理的大小和位置，所以我们可以将其设置为默认值
 //如此以来，我们只需要设置一次，这样能减少赋值的次数
@@ -282,6 +285,7 @@ Card::Card(int cost, int atk, int hp, char *namee)
     Hold = 0;
     moveFlag = 0;
     state = 0;
+    attackTimes = 1;
     //将名字赋值给name
     name = new char[strlen(namee) + 1];
     if (namee[0] != 'n')
@@ -310,14 +314,14 @@ struct Img
 {
     sf::Texture Texture;
     sf::Sprite Sprite;
-    void setSprite(char*,int x=0,int y=0);
+    void setSprite(char *, int x = 0, int y = 0);
 };
 //快捷设置你的图片，一键设置你的坐标，默认为0，0
 void Img::setSprite(char *path, int x, int y)
 {
     Texture.loadFromFile(path);
     Sprite.setTexture(Texture);
-    Sprite.setPosition(x,y);
+    Sprite.setPosition(x, y);
 }
 #ifdef __cpluscplus
 #endif

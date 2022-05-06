@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
 #include "list.h"
 #include "card.h"
 #include "button.h"
@@ -80,6 +81,10 @@ int CrystalCount; //水晶数量计数
 //抽牌
 bool NeedNewCard;
 
+//提示文字代码
+// 1.你已经攻击过一次了！
+int alertCode = 0;
+char alertText[100];
 //声明关键模块
 
 void Draw();
@@ -115,7 +120,22 @@ List *creat(List *list)
     list->val = Q;
     return list;
 }
-
+//在线程中的代码无限循环
+void Alert()
+{
+    while (1)
+    {
+        if (alertCode == 0)
+            continue;
+        if (alertCode == 1)
+        {
+            alertCode = 0;
+            strcpy(alertText, "YOU haved Attacked before!!!");
+            sf::sleep(sf::seconds(1));
+            strcpy(alertText, "");
+        }
+    }
+}
 // 决定按钮的状态
 void Round()
 {
@@ -309,6 +329,13 @@ void Enemy_Action()
     sf::sleep(sf::seconds(1));
     IsYourRound = true;
     IsRoundChange = true;
+    //回合切换后，更新你的战斗次数
+    Head = CardinFight;
+    while (Head)
+    {
+        Head->val.attackTimes = 1;
+        Head = Head->next;
+    }
 }
 
 // 绘画
@@ -430,7 +457,11 @@ void Draw()
     sf::Vector2f mouse_world = window.mapPixelToCoords(mouse);
     c.setPosition(mouse_world);
     window.draw(c);
-
+    //绘制提醒文字
+    Text txt(alertText, font, 100);
+    txt.setOrigin(txt.getGlobalBounds().width / 2, txt.getGlobalBounds().height / 2);
+    txt.setPosition(WIDTH / 2, HEIGHT / 2);
+    window.draw(txt);
     //绘制游戏结束画面
     if (isGameOver)
     {
@@ -605,6 +636,13 @@ void LeftPress()
     {
         if (Head->val.isInclude())
         {
+            if (Head->val.attackTimes == 0)
+            {
+                //弹出文字，你已经攻击过一次了！！！
+                alertCode = 1;
+                Head = Head->next;
+                continue;
+            }
             Head->val.Hold = 1;
             break;
         }
@@ -663,6 +701,8 @@ void LeftReleased()
             // ATKfunAnime();
             Head->val.HP -= Head1->val.ATK;
             Head1->val.HP -= Head->val.ATK;
+            //减少你的攻击次数
+            --Head1->val.attackTimes;
             break;
         }
         Head = Head->next;
@@ -729,6 +769,8 @@ void Input()
 
 int main()
 {
+    sf::Thread thread(&Alert);
+    thread.launch();
     Start();
     Initial_Draw();
 
