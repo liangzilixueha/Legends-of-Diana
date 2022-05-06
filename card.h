@@ -114,7 +114,7 @@ struct Card
     int Deathrattle;
     //圣盾：免疫一次伤害
     int Divien_Shield;
-
+    Vector2i mousePoint;
     sf::Texture Texture;
     sf::Sprite Sprite;
 
@@ -147,7 +147,7 @@ void Card::txtFollow()
 
     font.loadFromFile("simsun.ttc");
     text.setFont(font);
-    printf("%s\n",s1.toAnsiString().c_str());
+    //printf("%s\n",s1.toAnsiString().c_str());
     //printf("%s\n",s1);
     char s[99];
     //消耗值
@@ -163,7 +163,7 @@ void Card::txtFollow()
     text.setPosition(Sprite.getPosition().x + Width, Sprite.getPosition().y + Height);
     window.draw(text);
     //名字
-    
+    printf("texts1:%s\n",s1);
     text.setString(s1);
     text.setCharacterSize(20);
     text.setPosition(Sprite.getPosition().x + Width / 2 - 25, Sprite.getPosition().y + Height / 2);
@@ -220,10 +220,8 @@ int Card::isInclude()
 {
     Width = Texture.getSize().x;
     Height = Texture.getSize().y;
-    double x, y;
-    x = sf::Mouse::getPosition(window).x;
-    y = sf::Mouse::getPosition(window).y;
-    if (x - Sprite.getPosition().x < Width && x - Sprite.getPosition().x > 0 && y - Sprite.getPosition().y < Height && y - Sprite.getPosition().y > 0)
+    mousePoint = (Vector2i)window.mapPixelToCoords(Mouse::getPosition(window));
+    if (mousePoint.x - Sprite.getPosition().x < Width && mousePoint.x - Sprite.getPosition().x > 0 && mousePoint.y - Sprite.getPosition().y < Height && mousePoint.y - Sprite.getPosition().y > 0)
     {
         return 1;
     }
@@ -255,7 +253,8 @@ Card::Card(int cost, int atk, int hp)
 // 但是鼠标会在卡牌的*正中间*
 void Card::setCardFollowMouse()
 {
-    Card::Sprite.setPosition(sf::Mouse::getPosition(window).x - Width / 2, sf::Mouse::getPosition(window).y - Height / 2);
+    mousePoint = (Vector2i)window.mapPixelToCoords(Mouse::getPosition(window));
+    Card::Sprite.setPosition(mousePoint.x - Width / 2,mousePoint.y - Height / 2);
 }
 // 只是改变你的Hold值罢了
 //从0到1，从1到0

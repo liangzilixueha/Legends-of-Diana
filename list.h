@@ -29,6 +29,7 @@ extern "C"
     //前躯
     struct List *prior;
     void Insert(Card);
+    void Insert1(Card, Vector2i);
     int Length();
     void print();
 };
@@ -62,15 +63,60 @@ void List::Insert(Card a)
     th->next = p;
     p->prior = th;
 }
+void List::Insert1(Card a, Vector2i mousePoint)
+{
+    List *p;
+    p = (List *)malloc(sizeof(List));
+    p->next = NULL;
+    p->prior = NULL;
+    p->val = a;
+    List *th;
+    th = this;
+    // if (th->val.Sprite.getPosition().x > mousePoint.x)
+    // {
+    //     p->next = th;
+    //     th->prior = p;
+    //     th = p;
+    // }
+    // else
+    // {
+    while (th->next)
+    {
+        printf("%d %d\n", th->next->val.Sprite.getPosition().x+th->next->val.Sprite.getGlobalBounds().width/2, mousePoint.x);
+        if (th->next->val.Sprite.getPosition().x+th->next->val.Sprite.getGlobalBounds().width/2-50 > mousePoint.x)
+        {
+            printf("ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
+            
+            p->next = th->next;
+            th->next->prior = p;
+            th->next = p;
+            p->prior = th;
+            th = p;
+            return;
+        }
+        th=th->next;
+    }
+    th->next = p;
+    p->prior = th;
+    //}
+    // while (th->next)
+    // {
+    //     th = th->next;
+    // }
+    // th->next = p;
+    // p->prior = th;
+}
 //输出这个链表的内容用名字
 void List::print()
 {
     List *p = this->next;
     printf("[");
-    while(p){
-        printf("\"%s\"",s1);
-        if(p->next) printf(",");
-        p=p->next;
+    while (p)
+    {
+        printf("\"%s\"", s1);
+        if (p->next)
+            printf(",");
+        p = p->next;
     }
     printf("]\n");
 }

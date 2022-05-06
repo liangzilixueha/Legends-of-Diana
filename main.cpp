@@ -8,7 +8,7 @@ using namespace sf;
 //完成牌的攻击判定，动画
 //卡牌的效果
 //***************************//
-
+Vector2i mousePoint1;
 //正在选取卡片
 int isChooseCard = 0;
 //战斗的背景
@@ -20,19 +20,19 @@ List *CardinFight;
 //用来测试的无用链表
 List *Head;
 //测试例子1
-Card l(2, 2, 3);
+Card l(1, 2, 3);
 //测试例子2
-Card p(1, 2, 3);
+Card p(2, 2, 3);
 //测试例子3
-Card q(1, 2, 3);
+Card q(3, 2, 3);
 //测试例子4
-Card r(1, 2, 3);
+Card r(4, 2, 3);
 //测试例子5
-Card s(1, 2, 3);
+Card s(5, 2, 3);
 //测试例子6
-Card t(1, 2, 3);
+Card t(6, 2, 3);
 //测试例子7
-Card u(1, 2, 3);
+Card u(7, 2, 3);
 //战斗区卡牌数量
 int FightCardNum = 0;
 //创建一个节点
@@ -115,10 +115,12 @@ void Draw()
 
         for (int i = 1; i <= FightCardNum; i++)
         {
+            CircleShape c(10);
             Card Q(0, 0, 0);
             Q = Head->val;
             std::cout << FightCardNum << std::endl;
-            std::cout << "SPRITE" << Q.Sprite.getGlobalBounds().width << std::endl;
+            std::cout << "SPRITE" << Q.Sprite.getGlobalBounds().width << Q.Sprite.getGlobalBounds().height << std::endl;
+
             if (FightCardNum % 2 == 0)
             {
                 Q.Sprite.setPosition(WIDTH / 2 - 210 * (FightCardNum / 2) - 10 + (i - 1) * 210, HEIGHT / 2);
@@ -127,7 +129,8 @@ void Draw()
             {
                 Q.Sprite.setPosition(WIDTH / 2 - (FightCardNum / 2) * 210 - 95 + (i - 1) * 210, HEIGHT / 2);
             }
-
+            c.setPosition(Q.Sprite.getPosition().x + Q.Sprite.getGlobalBounds().width / 2-50, HEIGHT / 2);
+            window.draw(c);
             // Q.Sprite.setPosition(WIDTH/2, HEIGHT/2);
             window.draw(Q.Sprite);
             Q.txtFollow();
@@ -136,7 +139,7 @@ void Draw()
         }
     }
     //场景绘画线
-    CircleShape c(10);
+    CircleShape c(3);
     for (int i = 0; i < 50; i++)
     {
         c.setPosition(i * WIDTH / 50, HEIGHT / 2);
@@ -144,7 +147,10 @@ void Draw()
         c.setPosition(i * WIDTH / 50, HEIGHT * 2 / 3);
         window.draw(c);
     }
-    c.setPosition(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+    sf::Vector2i mouse = sf::Mouse::getPosition(window);
+    // Map Pixel to Coords:
+    sf::Vector2f mouse_world = window.mapPixelToCoords(mouse);
+    c.setPosition(mouse_world);
     window.draw(c);
     window.display();
 }
@@ -188,35 +194,41 @@ int main()
                     }
                 }
 
-                std::basic_ifstream<sf::Uint8> in;
-                std::basic_fstream<sf::Uint8> out("1234.txt");
+                // std::basic_ifstream<sf::Uint8> in;
+                // std::basic_fstream<sf::Uint8> out("1234.txt");
                 // std::basic_ofstream<sf::Uint8> out("1234.txt");
-                if (!out.is_open())
-                {
-                    printf("open error\n");
-                }
-                else
-                {
-                    printf("open success\n");
-                }
-                s2 = s1.toUtf8();
+                // if (!out.is_open())
+                // {
+                //     printf("open error\n");
+                // }
+                // else
+                // {
+                //     printf("open success\n");
+                // }
+                // s2 = sf::String::toUtf8(s1);
                 // out.open("1234.txt");
-                printf("s2  %s\n", s2.c_str());
-                out.write(s2.c_str(), s2.length());
-                out >> s3;
-                printf("next%s__%s\n", s2, s3);
+                // printf("s2  %s\n", s2.c_str());
+                // out.write(s2.c_str(), s2.length());
+                // out >> s3;
+                // sprintf("next%s__%s\n", s2, s3);
                 // printf("next%s\n", s3);
-                out.close();
+                // out.close();
                 // out.close();
                 // system("pause");
                 // return 0;
-                printf("s2  %s\n", s2);
-                in.open("1234.txt");
-                in >> s2;
-                in.close();
-                printf("next%s\n", s2);
-                s1.fromUtf8(s2.begin(), s2.end());
-                printf("s1%s\n", s1);
+                // printf("s2  %s\n", s2);
+                // in.open("a.txt");
+                // if(!in.is_open())
+                // {
+                //     printf("open error\n");
+                // }
+                // in >> s2;
+                // in.close();
+                // printf("next%s\n", s2);
+                // system("pause");
+                // s2.clear();
+                // s1=sf::String::fromUtf8(s2.begin(), s2.end());
+                // printf("s1%s\n", s1);
             }
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right)
             {
@@ -243,7 +255,9 @@ int main()
                     // if (sf::Mouse::getPosition().y >= HEIGHT / 2 && sf::Mouse::getPosition().y <= HEIGHT * 2 / 3)
                     if (Head->val.Sprite.getPosition().y >= HEIGHT / 2 && Head->val.Sprite.getPosition().y <= HEIGHT * 2 / 3)
                     {
-                        CardinFight->Insert(Head->val);
+                        mousePoint1 = (Vector2i)window.mapPixelToCoords(Mouse::getPosition(window));
+
+                        CardinFight->Insert1(Head->val, mousePoint1);
                         FightCardNum++;
                         printf("CardinFight:");
                         CardinFight->print();
