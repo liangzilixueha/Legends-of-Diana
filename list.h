@@ -29,6 +29,7 @@ extern "C"
     //前躯
     struct List *prior;
     void Insert(Card);
+    void InsertBetween(Card);
     int length();
     void print();
 };
@@ -61,6 +62,56 @@ void List::Insert(Card a)
     }
     th->next = p;
     p->prior = th;
+}
+//只能用在战斗卡牌（CardinFight）中！！！！
+//根据卡牌的位置在卡牌的中间插入一个卡牌
+//只能用在战斗卡牌（CardinFight）中！！！！
+void List::InsertBetween(Card a)
+{
+    List *p = this;
+    List *insert = (List *)malloc(sizeof(List));
+    insert->next = insert->prior = NULL;
+    insert->val = a;
+    if (p->length() == 0)
+    {
+        this->Insert(a);
+        return;
+    }
+    else if (p->length() == 1)
+    {
+        if (p->next->val.Sprite.getPosition().x < a.Sprite.getPosition().x)
+            this->Insert(a);
+        else
+        {
+            List *next = p->next;
+            insert->next = next;
+            next->prior = insert;
+            p->next = insert;
+            insert->prior = p;
+        }
+    }
+    else
+    {
+        while (p)
+        {
+            if (p->next == NULL)
+            {
+                this->Insert(a);
+                return;
+            }
+            if (p->val.Sprite.getPosition().x < a.Sprite.getPosition().x && p->next->val.Sprite.getPosition().x > a.Sprite.getPosition().x)
+            {
+                List *next = p->next;
+                insert->next = next;
+                next->prior = insert;
+                p->next = insert;
+                insert->prior = p;
+                return;
+            }
+            else
+                p = p->next;
+        }
+    }
 }
 //输出这个链表的内容用名字
 void List::print()

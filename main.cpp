@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
 #include "list.h"
 #include "card.h"
 #include "button.h"
@@ -80,6 +81,10 @@ int CrystalCount; //水晶数量计数
 //抽牌
 bool NeedNewCard;
 
+//提示文字代码
+// 1.你已经攻击过一次了！
+int alertCode = 0;
+char alertText[100];
 //声明关键模块
 
 void Draw();
@@ -115,7 +120,22 @@ List *creat(List *list)
     list->val = Q;
     return list;
 }
-
+//在线程中的代码无限循环
+void Alert()
+{
+    while (1)
+    {
+        if (alertCode == 0)
+            continue;
+        if (alertCode == 1)
+        {
+            alertCode = 0;
+            strcpy(alertText, "YOU haved Attacked before!!!");
+            sf::sleep(sf::seconds(1));
+            strcpy(alertText, "");
+        }
+    }
+}
 // 决定按钮的状态
 void Round()
 {
@@ -125,7 +145,6 @@ void Round()
         window.draw(YRound_Down.Sprite);
     else
         window.draw(ERound.Sprite);
-    
 }
 
 // 开始初始化
@@ -307,9 +326,16 @@ void Draw_Round()
 // 敌人的操作
 void Enemy_Action()
 {
-    sf::sleep(sf::seconds(3));
+    sf::sleep(sf::seconds(1));
     IsYourRound = true;
     IsRoundChange = true;
+    //回合切换后，更新你的战斗次数
+    Head = CardinFight;
+    while (Head)
+    {
+        Head->val.attackTimes = 1;
+        Head = Head->next;
+    }
 }
 
 // 绘画
@@ -343,6 +369,8 @@ void Draw()
     Head = CardHand->next;
     while (Head)
     {
+        if (isChooseCard == 1)
+            break;
         for (int i = 1; i <= CardHand->length(); i++)
         {
             if (CardHand->length() % 2 == 0)
@@ -353,6 +381,17 @@ void Draw()
             {
                 Head->val.Sprite.setPosition(WIDTH / 2 - (CardHand->length() / 2) * 210 - 95 + (i - 1) * 210, HEIGHT / 1.3);
             }
+            Card Q = Head->val;
+            window.draw(Q.Sprite);
+            Head->val.txtFollow();
+            // 下一个链表内容
+            Head = Head->next;
+        }
+    }
+    if (isChooseCard == 1)
+    {
+        for (int i = 1; i <= CardHand->length(); i++)
+        {
             Card Q = Head->val;
             window.draw(Q.Sprite);
             Head->val.txtFollow();
@@ -418,7 +457,11 @@ void Draw()
     sf::Vector2f mouse_world = window.mapPixelToCoords(mouse);
     c.setPosition(mouse_world);
     window.draw(c);
-
+    //绘制提醒文字
+    Text txt(alertText, font, 100);
+    txt.setOrigin(txt.getGlobalBounds().width / 2, txt.getGlobalBounds().height / 2);
+    txt.setPosition(WIDTH / 2, HEIGHT / 2);
+    window.draw(txt);
     //绘制游戏结束画面
     if (isGameOver)
     {
@@ -490,7 +533,7 @@ void Logic()
         while (Head && NeedNewCard)
         {
             // 将这个卡牌插入到手牌当中
-            if (CardHand->length() >= 4)
+            if (CardHand->length() >= 7)
                 break;
             CardHand->Insert(Head->val);
             // 下面这一串都是为了将这个节点从牌库中删除
@@ -566,6 +609,9 @@ void Logic()
 // 左键单击
 void LeftPress()
 {
+    // 回合切换
+    if (YRound.isInclude() && IsYourRound == true)
+        IsPressed = true;
     // 确保你只能选择一个卡牌，且是最上面的卡牌
     // 最上面的卡牌：即最后绘制的卡牌
     Head = CardHand;
@@ -580,6 +626,7 @@ void LeftPress()
             if (Head->val.isInclude())
             {
                 Head->val.Hold = 1;
+                isChooseCard = 1;
                 break;
             }
             Head = Head->prior;
@@ -592,6 +639,13 @@ void LeftPress()
     {
         if (Head->val.isInclude())
         {
+            if (Head->val.attackTimes == 0)
+            {
+                //弹出文字，你已经攻击过一次了！！！
+                alertCode = 1;
+                Head = Head->next;
+                continue;
+            }
             Head->val.Hold = 1;
             break;
         }
@@ -601,6 +655,13 @@ void LeftPress()
 // 左键释放
 void LeftReleased()
 {
+    //回合切换
+    if (YRound_Down.isInclude() && IsYourRound == true)
+    {
+        IsPressed = false;
+        IsYourRound = false;
+        IsRoundChange = true;
+    }
     // 当鼠标抓着手牌的时候↓
     Head = CardHand->next;
     while (Head)
@@ -613,7 +674,7 @@ void LeftReleased()
         {
             if (CardinFight->length() >= 7)
                 break;
-            CardinFight->Insert(Head->val);
+            CardinFight->InsertBetween(Head->val);
             // 下面这一串都是为了将这个节点从手牌中删除
             if (Head->next == NULL)
             {
@@ -650,6 +711,8 @@ void LeftReleased()
             // ATKfunAnime();
             Head->val.HP -= Head1->val.ATK;
             Head1->val.HP -= Head->val.ATK;
+            //减少你的攻击次数
+            --Head1->val.attackTimes;
             break;
         }
         Head = Head->next;
@@ -691,31 +754,18 @@ void Input()
         if (event.type == sf::Event::Closed)
             window.close();
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
-        {
-            if (event.mouseButton.x > 1470 && event.mouseButton.y > 390 &&
-                event.mouseButton.x < 1800 && event.mouseButton.y < 600 && IsYourRound == true)
-                IsPressed = true;
             LeftPress();
-        }
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right)
             RightPress();
         if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
-        {
-
-            if (event.mouseButton.x > 1480 && event.mouseButton.y > 390 &&
-                event.mouseButton.x < 1800 && event.mouseButton.y < 600 && IsYourRound == true)
-            {
-                IsPressed = false;
-                IsYourRound = false;
-                IsRoundChange = true;
-            }
             LeftReleased();
-        }
     }
 }
 
 int main()
 {
+    sf::Thread thread(&Alert);
+    thread.launch();
     Start();
     Initial_Draw();
 
