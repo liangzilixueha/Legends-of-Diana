@@ -533,7 +533,7 @@ void Logic()
         while (Head && NeedNewCard)
         {
             // 将这个卡牌插入到手牌当中
-            if (CardHand->length() >= 4)
+            if (CardHand->length() >= 7)
                 break;
             CardHand->Insert(Head->val);
             // 下面这一串都是为了将这个节点从牌库中删除
@@ -609,6 +609,9 @@ void Logic()
 // 左键单击
 void LeftPress()
 {
+    // 回合切换
+    if (YRound.isInclude() && IsYourRound == true)
+        IsPressed = true;
     // 确保你只能选择一个卡牌，且是最上面的卡牌
     // 最上面的卡牌：即最后绘制的卡牌
     Head = CardHand;
@@ -652,6 +655,13 @@ void LeftPress()
 // 左键释放
 void LeftReleased()
 {
+    //回合切换
+    if (YRound_Down.isInclude() && IsYourRound == true)
+    {
+        IsPressed = false;
+        IsYourRound = false;
+        IsRoundChange = true;
+    }
     // 当鼠标抓着手牌的时候↓
     Head = CardHand->next;
     while (Head)
@@ -664,7 +674,7 @@ void LeftReleased()
         {
             if (CardinFight->length() >= 7)
                 break;
-            CardinFight->Insert(Head->val);
+            CardinFight->InsertBetween(Head->val);
             // 下面这一串都是为了将这个节点从手牌中删除
             if (Head->next == NULL)
             {
@@ -744,26 +754,11 @@ void Input()
         if (event.type == sf::Event::Closed)
             window.close();
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
-        {
-            if (event.mouseButton.x > 1470 && event.mouseButton.y > 390 &&
-                event.mouseButton.x < 1800 && event.mouseButton.y < 600 && IsYourRound == true)
-                IsPressed = true;
             LeftPress();
-        }
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right)
             RightPress();
         if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
-        {
-
-            if (event.mouseButton.x > 1480 && event.mouseButton.y > 390 &&
-                event.mouseButton.x < 1800 && event.mouseButton.y < 600 && IsYourRound == true)
-            {
-                IsPressed = false;
-                IsYourRound = false;
-                IsRoundChange = true;
-            }
             LeftReleased();
-        }
     }
 }
 
