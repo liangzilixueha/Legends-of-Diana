@@ -36,9 +36,8 @@ List *CardinHouse;
 List *EnemyinFight;
 // 用来测试的两个无用链表,
 List *Head, *Head1;
-// 测试例子1
-Card l(2, 2, 3, "Diana");
-// 测试例子2
+
+// 嘉心糖的手牌
 Card Base0(1, 2, 3, "0");
 Card Base1(2, 2, 3, "1");
 Card Base2(2, 2, 3, "2");
@@ -47,14 +46,22 @@ Card Base4(2, 2, 3, "4");
 Card Base5(2, 2, 3, "5");
 Card Base6(1, 2, 3, "6");
 Card Base7(1, 2, 3, "7");
-// 敌人木人桩
-Card Tree(1000, 4, 1000, "n");
+// 叔叔的手牌
 Card base1(1, 1, 5, "n");
+Card shu0(1, 2, 3, "0");
+Card shu1(1, 2, 3, "1");
+Card shu2(1, 2, 3, "2");
+Card shu3(1, 2, 3, "3");
+Card shu4(1, 2, 3, "4");
+Card shu5(1, 2, 3, "5");
+Card shu6(1, 2, 3, "6");
+Card shu7(1, 2, 3, "7");
+
 // 亡语卡牌
 Card deathcard(1, 1, 2, "n");
 // 两张脸
 Card enemyface(-99, -99, 10, "chenrui");
-Card playerface(-99, -99, 9, "player");
+Card playerface(-99, -99, 10, "jiaxintang");
 int Game_judge; //判断是胜利还是失败的变量
 // 游戏回合的摆设
 Img YRound, YRound_Down;
@@ -196,13 +203,7 @@ void Start()
     GStart.setSprite("data/img/img_discord/GStart.png", 710, 400);
     GStart.Sprite.setScale(2, 2);
 
-    // 卡牌测试1的初始化
-    l.Texture.loadFromFile("data/img/base.png");
-    l.Sprite.setTexture(l.Texture);
-    // 木人桩的初始化
-    Tree.setSprite("data/img/img_card/base0.png");
-    base1.setSprite("data/img/img_card/base1.png");
-
+    //嘉心糖手牌的初始化
     Base0.setSprite("data/img/img_card/base0.png");
     Base1.setSprite("data/img/img_card/base1.png");
     Base2.setSprite("data/img/img_card/base2.png");
@@ -211,6 +212,15 @@ void Start()
     Base5.setSprite("data/img/img_card/base5.png");
     Base6.setSprite("data/img/img_card/base6.png");
     Base7.setSprite("data/img/img_card/base7.png");
+    //叔叔手牌的初始化
+    shu0.setSprite("data/img/cardsforCR/dinpin.png");
+    shu1.setSprite("data/img/cardsforCR/he.png");
+    shu2.setSprite("data/img/cardsforCR/LEX.png");
+    shu3.setSprite("data/img/cardsforCR/LV0.png");
+    shu4.setSprite("data/img/cardsforCR/mengguren.png");
+    shu5.setSprite("data/img/cardsforCR/nanami.png");
+    shu6.setSprite("data/img/cardsforCR/vox.png");
+    shu7.setSprite("data/img/cardsforCR/vvip.png");
 
     // 音效的初始化
     // 开场音效
@@ -279,8 +289,8 @@ void Start()
 
     // 敌人的木人桩
     EnemyinFight = creat(EnemyinFight);
-    EnemyinFight->Insert(Tree);
-    EnemyinFight->Insert(base1);
+    EnemyinFight->Insert(shu0);
+    EnemyinFight->Insert(shu1);
 
     // 死亡链表
     Dead = creat(Dead);
@@ -330,8 +340,8 @@ void Initial_Draw()
     // 画两个脸
     window.draw(enemyface.Sprite);
     window.draw(playerface.Sprite);
-    //enemyface.txtFollow();
-    //playerface.txtFollow();
+    // enemyface.txtFollow();
+    // playerface.txtFollow();
     window.draw(GStart.Sprite);
     // 画法力水晶背景
     window.draw(CrystalBG.Sprite);
@@ -488,8 +498,8 @@ void Draw()
     // 画两个脸
     window.draw(enemyface.Sprite);
     window.draw(playerface.Sprite);
-    //enemyface.txtFollow();
-    //playerface.txtFollow();
+    // enemyface.txtFollow();
+    // playerface.txtFollow();
 
     // 画法力水晶背景
     window.draw(CrystalBG.Sprite);
