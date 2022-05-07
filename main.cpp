@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
+#include <SFML/Audio.hpp>
 #include "list.h"
 #include "card.h"
 #include "button.h"
@@ -54,7 +55,7 @@ Card deathcard(1, 1, 2, "n");
 // 两张脸
 Card enemyface(-99, -99, 10, "chenrui");
 Card playerface(-99, -99, 9, "player");
-int Game_judge;//判断是胜利还是失败的变量
+int Game_judge; //判断是胜利还是失败的变量
 // 游戏回合的摆设
 Img YRound, YRound_Down;
 Img ERound, ERound_Down;
@@ -77,6 +78,10 @@ Img CrystalBG;
 Text num_c;
 Font font_c;
 int CrystalCount; //水晶数量计数
+
+//声音
+SoundBuffer startM;
+Sound StartM;
 
 //抽牌
 bool NeedNewCard;
@@ -205,6 +210,10 @@ void Start()
     Base6.setSprite("data/img/img_card/base6.png");
     Base7.setSprite("data/img/img_card/base7.png");
 
+    //音效的初始化
+    startM.loadFromFile("data/music/start/welcome.wav");
+    StartM.setBuffer(startM);
+
     // 牌库的初始化
     CardinHouse = creat(CardinHouse);
     srand((unsigned int)(time(NULL)));
@@ -312,6 +321,7 @@ void Initial_Draw()
     window.draw(Crystal.Sprite);
 
     window.display();
+    StartM.play();
     // 睡个1秒钟
     sf::sleep(sf::seconds(1));
 }
@@ -351,7 +361,7 @@ void Enemy_Action()
 {
     // 以下操作为敌人的操作
     // 从库中抽取牌
-    if(RoundCount%2==0)
+    if (RoundCount % 2 == 0)
     {
         Head = CardinHouse->next;
         Head1 = EnemyinFight;
@@ -378,7 +388,7 @@ void Enemy_Action()
             Head = Head->next;
         }
     }
-    
+
     List *p = EnemyinFight->next;
     while (p)
     {
@@ -564,7 +574,7 @@ void Draw()
     //绘制游戏结束画面
     if (isGameOver)
     {
-        if(Game_judge==1)
+        if (Game_judge == 1)
         {
             Font font;
             font.loadFromFile("data/ttf/yuanshen.ttf");
@@ -577,7 +587,9 @@ void Draw()
             window.display();
             sf::sleep(sf::seconds(10));
             window.clear();
-        }else{
+        }
+        else
+        {
             Font font;
             font.loadFromFile("data/ttf/yuanshen.ttf");
             Text win;
@@ -590,7 +602,6 @@ void Draw()
             sf::sleep(sf::seconds(10));
             window.clear();
         }
-        
     }
 
     // 判定回合改变
@@ -599,7 +610,7 @@ void Draw()
     //绘制我的血量，不要被卡牌挡住了
     c.setRadius(70);
     c.setOrigin(c.getGlobalBounds().width / 2, c.getGlobalBounds().height / 2);
-    c.setPosition(1145,850);
+    c.setPosition(1145, 850);
     window.draw(c);
     char test[100];
     txt.setString(itoa(playerface.HP, test, 10));
@@ -690,13 +701,13 @@ void Logic()
     if (enemyface.HP <= 0)
     {
         isGameOver = true;
-        Game_judge=1;
+        Game_judge = 1;
     }
     //判定失败 即为自身血量为空
     if (playerface.HP <= 0)
     {
         isGameOver = true;
-        Game_judge=2;
+        Game_judge = 2;
     }
     // 判断*双方*卡牌死亡的问题
     Head = CardinFight;
@@ -922,7 +933,5 @@ int main()
         Input();
         Logic();
         Draw();
-
-        
     }
 }
