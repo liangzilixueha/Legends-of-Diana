@@ -295,8 +295,8 @@ void Start()
 
     // 敌人的木人桩
     EnemyinFight = creat(EnemyinFight);
-    EnemyinFight->Insert(shu0);
-    EnemyinFight->Insert(shu1);
+    //EnemyinFight->Insert(shu0);
+    //EnemyinFight->Insert(shu1);
 
     // 死亡链表
     Dead = creat(Dead);
