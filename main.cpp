@@ -343,15 +343,16 @@ void Enemy_Action()
     List *p = EnemyinFight->next;
     while (p)
     {
+        srand((unsigned int)(time(NULL)));
         //随机一个数字，指定对方的，也就是自己的受害者
         Head1 = CardinFight->next;
         int r;
         //场上为空则直接攻击脸
-        if (!Head1)
-            r = CardinFight->length() + 1;
+        if (CardinFight->length() == 0)
+            r = CardinFight->length();
         else
-            r = rand() % CardinFight->length() + 1;
-        //如果生成越届，则正好攻击我方的脸
+            r = rand() % (CardinFight->length() + 1);
+        //如果生成overflow，则正好攻击我方的脸
         if (r == CardinFight->length())
         {
             playerface.HP -= p->val.ATK;
@@ -365,10 +366,9 @@ void Enemy_Action()
             sf::sleep(sf::milliseconds(700));
             continue;
         }
-        //循环找到这个受害者
+        //循环找到这个受害
         for (int i = 0; i < r; i++)
             Head1 = Head1->next;
-        printf("%d\n", CardinFight->length());
         p->val.HP -= Head1->val.ATK;
         Head1->val.HP -= p->val.ATK;
         Draw();
