@@ -574,8 +574,7 @@ void Logic()
         Enemy_Action();
         RoundCount++;
         NeedNewCard = true;
-        if (CrystalCount < RoundCount)
-            CrystalCount++;
+        CrystalCount = RoundCount;
     }
 
     // 抽取新的牌
@@ -667,22 +666,25 @@ void LeftPress()
         IsPressed = true;
     // 确保你只能选择一个卡牌，且是最上面的卡牌
     // 最上面的卡牌：即最后绘制的卡牌
-    Head = CardHand;
-    while (Head->next)
+    if (CrystalCount > 0) // 若卡牌所需法力值小于水晶数，禁止点击（数值策划后需细化）
     {
-        Head = Head->next;
-    }
-    if (isChooseCard == 0) // 鼠标上没有被抓手牌
-    {
-        while (Head)
+        Head = CardHand;
+        while (Head->next)
         {
-            if (Head->val.isInclude())
+            Head = Head->next;
+        }
+        if (isChooseCard == 0) // 鼠标上没有被抓手牌
+        {
+            while (Head)
             {
-                Head->val.Hold = 1;
-                isChooseCard = 1;
-                break;
+                if (Head->val.isInclude())
+                {
+                    Head->val.Hold = 1;
+                    isChooseCard = 1;
+                    break;
+                }
+                Head = Head->prior;
             }
-            Head = Head->prior;
         }
     }
     // 战斗卡牌点击后，产生面对敌方的预攻击直线
@@ -728,6 +730,7 @@ void LeftReleased()
             if (CardinFight->length() >= 7)
                 break;
             CardinFight->InsertBetween(Head->val);
+            CrystalCount--;
             // 下面这一串都是为了将这个节点从手牌中删除
             if (Head->next == NULL)
             {
