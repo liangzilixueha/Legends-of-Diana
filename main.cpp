@@ -558,7 +558,10 @@ void Logic()
 {
     // 更新法力水晶计数
     std::stringstream ss;
-    ss << CrystalCount << " / " << RoundCount;
+    if (RoundCount >= 10)
+        ss << CrystalCount << " / " << 10;
+    else
+        ss << CrystalCount << " / " << RoundCount;
     num_c.setString(ss.str());
 
     //点击的函数，当你的Hold为1的时候
@@ -589,7 +592,8 @@ void Logic()
         Enemy_Action();
         RoundCount++;
         NeedNewCard = true;
-        CrystalCount = RoundCount;
+        if (RoundCount <= 10) // 法力水晶的总数小于10！！！
+            CrystalCount = RoundCount;
     }
 
     // 抽取新的牌
