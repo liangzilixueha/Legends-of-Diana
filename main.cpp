@@ -54,7 +54,7 @@ Card deathcard(1, 1, 2, "n");
 // 两张脸
 Card enemyface(-99, -99, 10, "chenrui");
 Card playerface(-99, -99, 9, "player");
-
+int Game_judge;//判断是胜利还是失败的变量
 // 游戏回合的摆设
 Img YRound, YRound_Down;
 Img ERound, ERound_Down;
@@ -533,17 +533,33 @@ void Draw()
     //绘制游戏结束画面
     if (isGameOver)
     {
-        Font font;
-        font.loadFromFile("data/ttf/yuanshen.ttf");
-        Text win;
-        win.setString("You Win!");
-        win.setFont(font);
-        win.setCharacterSize(400);
-        win.setColor(sf::Color::Red);
-        window.draw(win);
-        window.display();
-        sf::sleep(sf::seconds(10));
-        window.clear();
+        if(Game_judge==1)
+        {
+            Font font;
+            font.loadFromFile("data/ttf/yuanshen.ttf");
+            Text win;
+            win.setString("You Win!");
+            win.setFont(font);
+            win.setCharacterSize(400);
+            win.setColor(sf::Color::Red);
+            window.draw(win);
+            window.display();
+            sf::sleep(sf::seconds(10));
+            window.clear();
+        }else{
+            Font font;
+            font.loadFromFile("data/ttf/yuanshen.ttf");
+            Text win;
+            win.setString("You Lose!");
+            win.setFont(font);
+            win.setCharacterSize(400);
+            win.setColor(sf::Color::Red);
+            window.draw(win);
+            window.display();
+            sf::sleep(sf::seconds(10));
+            window.clear();
+        }
+        
     }
 
     // 判定回合改变
@@ -639,11 +655,18 @@ void Logic()
     }
 
     // 判定游戏胜负
+    //判定胜利 即为对方血量为空
     if (enemyface.HP <= 0)
     {
         isGameOver = true;
+        Game_judge=1;
     }
-
+    //判定失败 即为自身血量为空
+    if (playerface.HP <= 0)
+    {
+        isGameOver = true;
+        Game_judge=2;
+    }
     // 判断*双方*卡牌死亡的问题
     Head = CardinFight;
     while (Head)
@@ -861,14 +884,14 @@ int main()
     Initial_Draw();
 
     // 游戏主循环
-    while (window.isOpen())
+    while (window.isOpen() && isGameOver == false)
     {
         window.clear();
 
         Input();
-
+        Logic();
         Draw();
 
-        Logic();
+        
     }
 }
