@@ -330,8 +330,8 @@ void Initial_Draw()
     // 画两个脸
     window.draw(enemyface.Sprite);
     window.draw(playerface.Sprite);
-    enemyface.txtFollow();
-    playerface.txtFollow();
+    //enemyface.txtFollow();
+    //playerface.txtFollow();
     window.draw(GStart.Sprite);
     // 画法力水晶背景
     window.draw(CrystalBG.Sprite);
@@ -340,8 +340,23 @@ void Initial_Draw()
     Crystal.Sprite.setPosition(1323, 1017);
     window.draw(Crystal.Sprite);
 
-    window.display();
     StartM.play();
+
+    // 绘制鼠标点，让你看的清楚
+    CircleShape d(10);
+    //绘制我的血量背景，不要被卡牌挡住了
+    d.setRadius(70);
+    d.setOrigin(d.getGlobalBounds().width / 2, d.getGlobalBounds().height / 2);
+    d.setPosition(1145, 850);
+    window.draw(d);
+    //绘制叔叔的血量背景，不要被卡牌挡住了
+    d.setRadius(70);
+    d.setOrigin(d.getGlobalBounds().width / 2, d.getGlobalBounds().height / 2);
+    d.setPosition(1145, 240);
+    window.draw(d);
+    char test1[100];
+
+    window.display();
     // 睡个1秒钟
     sf::sleep(sf::seconds(2));
 }
@@ -473,8 +488,8 @@ void Draw()
     // 画两个脸
     window.draw(enemyface.Sprite);
     window.draw(playerface.Sprite);
-    enemyface.txtFollow();
-    playerface.txtFollow();
+    //enemyface.txtFollow();
+    //playerface.txtFollow();
 
     // 画法力水晶背景
     window.draw(CrystalBG.Sprite);
@@ -591,6 +606,30 @@ void Draw()
     txt.setOrigin(txt.getGlobalBounds().width / 2, txt.getGlobalBounds().height / 2);
     txt.setPosition(WIDTH / 2, HEIGHT / 2);
     window.draw(txt);
+
+    //绘制我的血量，不要被卡牌挡住了
+    c.setRadius(70);
+    c.setOrigin(c.getGlobalBounds().width / 2, c.getGlobalBounds().height / 2);
+    c.setPosition(1145, 850);
+    window.draw(c);
+    char test[100];
+    txt.setString(itoa(playerface.HP, test, 10));
+    txt.setColor(sf::Color::Red);
+    txt.setOrigin(txt.getGlobalBounds().width / 2, txt.getGlobalBounds().height / 2);
+    txt.setPosition(c.getPosition());
+    window.draw(txt);
+    //绘制叔叔的血量，不要被卡牌挡住了
+    c.setRadius(70);
+    c.setOrigin(c.getGlobalBounds().width / 2, c.getGlobalBounds().height / 2);
+    c.setPosition(1145, 240);
+    window.draw(c);
+    char test1[100];
+    txt.setString(itoa(enemyface.HP, test, 10));
+    txt.setColor(sf::Color::Red);
+    txt.setOrigin(txt.getGlobalBounds().width / 2, txt.getGlobalBounds().height / 2);
+    txt.setPosition(c.getPosition());
+    window.draw(txt);
+
     //绘制游戏结束画面
     if (isGameOver)
     {
@@ -627,17 +666,7 @@ void Draw()
     // 判定回合改变
     if (IsRoundChange)
         Draw_Round();
-    //绘制我的血量，不要被卡牌挡住了
-    c.setRadius(70);
-    c.setOrigin(c.getGlobalBounds().width / 2, c.getGlobalBounds().height / 2);
-    c.setPosition(1145, 850);
-    window.draw(c);
-    char test[100];
-    txt.setString(itoa(playerface.HP, test, 10));
-    txt.setColor(sf::Color::Black);
-    txt.setOrigin(txt.getGlobalBounds().width / 2, txt.getGlobalBounds().height / 2);
-    txt.setPosition(c.getPosition());
-    window.draw(txt);
+
     window.display();
 }
 
@@ -865,7 +894,7 @@ void LeftReleased()
                 if (Head->val.Order == '7')
                     JR7.play();
 
-                //JR7.play();
+                // JR7.play();
             }
             CardinFight->InsertBetween(Head->val);
             // 下面这一串都是为了将这个节点从手牌中删除
