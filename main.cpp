@@ -152,7 +152,7 @@ void Alert()
         if (alertCode == 2)
         {
             alertCode = 0;
-            strcpy(alertText, "YOU haven't enough Power to user it!");
+            strcpy(alertText, "YOU haven't enough Power to user it!!!");
             sf::sleep(sf::seconds(1));
             strcpy(alertText, "");
         }
@@ -272,7 +272,8 @@ void Start()
     enemyface.Sprite.setScale(1, 1);
     enemyface.Sprite.setPosition(WIDTH / 2 - enemyface.Width / 2 + 10, 110);
     playerface.setSprite("data/img/img_card/player.png");
-    playerface.Sprite.setPosition(WIDTH / 2 - playerface.Width / 2 + 5, HEIGHT - playerface.Height * 2 - 10);
+    playerface.Sprite.setPosition(WIDTH / 2 - playerface.Width / 2 + 5,
+                                  HEIGHT - playerface.Height * 2 - 10);
 
     // 法力水晶
     Crystal.setSprite("data/img/img_discord/power.png");
@@ -436,11 +437,13 @@ void Draw()
         {
             if (CardHand->length() % 2 == 0)
             {
-                Head->val.Sprite.setPosition(WIDTH / 2 - 210 * (CardHand->length() / 2) - 10 + (i - 1) * 210, HEIGHT / 1.3);
+                Head->val.Sprite.setPosition(WIDTH / 2 - 155 * (CardHand->length() / 2) + (i - 1) * 155,
+                                             HEIGHT / 1.25);
             }
             else
             {
-                Head->val.Sprite.setPosition(WIDTH / 2 - (CardHand->length() / 2) * 210 - 95 + (i - 1) * 210, HEIGHT / 1.3);
+                Head->val.Sprite.setPosition(WIDTH / 2 - 155 * (CardHand->length() / 2) - 75 + (i - 1) * 155,
+                                             HEIGHT / 1.25);
             }
             Card Q = Head->val;
             window.draw(Q.Sprite);
@@ -469,11 +472,13 @@ void Draw()
         {
             if (CardinFight->length() % 2 == 0)
             {
-                Head->val.Sprite.setPosition(WIDTH / 2 - 210 * (CardinFight->length() / 2) - 10 + (i - 1) * 210, HEIGHT / 2);
+                Head->val.Sprite.setPosition(WIDTH / 2 - 155 * (CardinFight->length() / 2) + (i - 1) * 155,
+                                             HEIGHT / 2.2);
             }
             else
             {
-                Head->val.Sprite.setPosition(WIDTH / 2 - (CardinFight->length() / 2) * 210 - 95 + (i - 1) * 210, HEIGHT / 2);
+                Head->val.Sprite.setPosition(WIDTH / 2 - 155 * (CardinFight->length() / 2) - 75 + (i - 1) * 155,
+                                             HEIGHT / 2.2);
             }
             Card Q = Head->val;
             window.draw(Q.Sprite);
@@ -491,11 +496,13 @@ void Draw()
         {
             if (EnemyinFight->length() % 2 == 0)
             {
-                Head->val.Sprite.setPosition(WIDTH / 2 - 210 * (EnemyinFight->length() / 2) - 10 + (i - 1) * 210, HEIGHT / 4);
+                Head->val.Sprite.setPosition(WIDTH / 2 - 155 * (EnemyinFight->length() / 2) + 155 * (i - 1),
+                                             HEIGHT / 4);
             }
             else
             {
-                Head->val.Sprite.setPosition(WIDTH / 2 - (EnemyinFight->length() / 2) * 210 - 95 + (i - 1) * 210, HEIGHT / 4);
+                Head->val.Sprite.setPosition(WIDTH / 2 - 155 * (EnemyinFight->length() / 2) - 75 + 155 * (i - 1),
+                                             HEIGHT / 4);
             }
             Card Q = Head->val;
             window.draw(Q.Sprite);
