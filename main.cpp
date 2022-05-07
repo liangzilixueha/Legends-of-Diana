@@ -349,6 +349,36 @@ void Draw_Round()
 // 敌人的操作
 void Enemy_Action()
 {
+    // 以下操作为敌人的操作
+    // 从库中抽取牌
+    if(RoundCount%2==0)
+    {
+        Head = CardinHouse->next;
+        Head1 = EnemyinFight;
+        // 将这个卡牌插入到手牌当中
+        if (Head1->length() < 7)
+        {
+            Head1->Insert(Head->val);
+            // 下面这一串都是为了将这个节点从牌库中删除
+            if (Head->next == NULL)
+            {
+                Head->prior->next = NULL;
+            }
+            else if (Head->next->next == NULL)
+            {
+                Head->val = Head->next->val;
+                Head->next = Head->next->next;
+            }
+            else
+            {
+                Head->val = Head->next->val;
+                Head->next = Head->next->next;
+                Head->next->prior = Head;
+            }
+            Head = Head->next;
+        }
+    }
+    
     List *p = EnemyinFight->next;
     while (p)
     {
@@ -389,6 +419,7 @@ void Enemy_Action()
         sf::sleep(sf::milliseconds(700));
         p = p->next;
     }
+
     IsYourRound = true;
     IsRoundChange = true;
     //回合切换后，更新你的战斗次数
