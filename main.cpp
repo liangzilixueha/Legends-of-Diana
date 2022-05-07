@@ -30,8 +30,10 @@ List *Dead;
 List *CardHand;
 // 场上的战斗牌链表
 List *CardinFight;
-// 库中牌链表
+// 库中牌链表（嘉心糖的）
 List *CardinHouse;
+// 库中牌列表（叔叔的）
+List *CardinShu;
 // 敌人的战斗链表
 List *EnemyinFight;
 // 用来测试的两个无用链表,
@@ -251,6 +253,7 @@ void Start()
     SS1.setBuffer(ss1);
 
     // 牌库的初始化
+    // 嘉心糖的牌库
     CardinHouse = creat(CardinHouse);
     srand((unsigned int)(time(NULL)));
     int no;
@@ -287,6 +290,44 @@ void Start()
             break;
         }
     }
+    // 叔叔的牌库
+    CardinShu = creat(CardinShu);
+    srand((unsigned int)(time(NULL)));
+    int NoS;
+    for (int i = 0; i < 40; i++)
+    {
+        NoS = rand() % 7;
+        switch (NoS)
+        {
+        case 0:
+            CardinShu->Insert(shu0);
+            break;
+        case 1:
+            CardinShu->Insert(shu1);
+            break;
+        case 2:
+            CardinShu->Insert(shu2);
+            break;
+        case 3:
+            CardinHouse->Insert(shu3);
+            break;
+        case 4:
+            CardinShu->Insert(shu4);
+            break;
+        case 5:
+            CardinShu->Insert(shu5);
+            break;
+        case 6:
+            CardinShu->Insert(shu6);
+            break;
+        case 7:
+            CardinShu->Insert(shu7);
+            break;
+        default:
+            break;
+        }
+    }
+
     // 手牌的初始化
     CardHand = creat(CardHand);
     CardHand->Insert(Base7);
@@ -295,8 +336,8 @@ void Start()
 
     // 敌人的木人桩
     EnemyinFight = creat(EnemyinFight);
-    //EnemyinFight->Insert(shu0);
-    //EnemyinFight->Insert(shu1);
+    // EnemyinFight->Insert(shu0);
+    // EnemyinFight->Insert(shu1);
 
     // 死亡链表
     Dead = creat(Dead);
@@ -412,38 +453,35 @@ void Enemy_Action()
 {
     // 以下操作为敌人的操作
     // 从库中抽取牌
-    if (RoundCount % 2 == 0)
+    Head = CardinShu->next;
+    Head1 = EnemyinFight;
+    // 将这个卡牌插入到手牌当中
+    if (Head1->length() < 7)
     {
-        Head = CardinHouse->next;
-        Head1 = EnemyinFight;
-        // 将这个卡牌插入到手牌当中
-        if (Head1->length() < 7)
+        Head1->Insert(Head->val);
+        // 下面这一串都是为了将这个节点从牌库中删除
+        if (Head->next == NULL)
         {
-            Head1->Insert(Head->val);
-            // 下面这一串都是为了将这个节点从牌库中删除
-            if (Head->next == NULL)
-            {
-                Head->prior->next = NULL;
-            }
-            else if (Head->next->next == NULL)
-            {
-                Head->val = Head->next->val;
-                Head->next = Head->next->next;
-            }
-            else
-            {
-                Head->val = Head->next->val;
-                Head->next = Head->next->next;
-                Head->next->prior = Head;
-            }
-            Head = Head->next;
-            // 随机播放音频
-            int suijishu = rand() * 2;
-            if (suijishu == 0)
-                SS1.play();
-            else
-                SS0.play();
+            Head->prior->next = NULL;
         }
+        else if (Head->next->next == NULL)
+        {
+            Head->val = Head->next->val;
+            Head->next = Head->next->next;
+        }
+        else
+        {
+            Head->val = Head->next->val;
+            Head->next = Head->next->next;
+            Head->next->prior = Head;
+        }
+        Head = Head->next;
+        // 随机播放音频
+        int suijishu = rand() % 2;
+        if (suijishu == 0)
+            SS1.play();
+        else
+            SS0.play();
     }
 
     List *p = EnemyinFight->next;
