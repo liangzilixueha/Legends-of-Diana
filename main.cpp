@@ -47,7 +47,7 @@ Card Base5(1, 2, 3, "n");
 Card Base6(1, 2, 3, "n");
 Card Base7(1, 2, 3, "n");
 // 敌人木人桩
-Card Tree(1000, 1, 1000, "n");
+Card Tree(1000, 4, 1000, "n");
 Card base1(1, 1, 5, "n");
 // 亡语卡牌
 Card deathcard(1, 1, 2, "n");
@@ -109,6 +109,20 @@ void LineTo(double x, double y)
         window.draw(c);
     }
     return;
+}
+// 画线函数
+void Line(double x, double y, double targetx, double targety)
+{
+
+    double dx = (targetx - x) / 5000;
+    double dy = (targety - y) / 5000;
+    for (int i = 0; i < 5000; i++)
+    {
+        sf::CircleShape c(2);
+        c.setFillColor(sf::Color::White);
+        c.setPosition(x + i * dx, y + i * dy);
+        window.draw(c);
+    }
 }
 // 创建一个节点
 List *creat(List *list)
@@ -326,7 +340,46 @@ void Draw_Round()
 // 敌人的操作
 void Enemy_Action()
 {
-    sf::sleep(sf::seconds(1));
+    List *p = EnemyinFight->next;
+    while (p)
+    {
+        //随机一个数字，指定对方的，也就是自己的受害者
+        Head1 = CardinFight->next;
+        int r;
+        //场上为空则直接攻击脸
+        if (!Head1)
+            r = CardinFight->length() + 1;
+        else
+            r = rand() % CardinFight->length() + 1;
+        //如果生成越届，则正好攻击我方的脸
+        if (r == CardinFight->length())
+        {
+            playerface.HP -= p->val.ATK;
+            Draw();
+            Line(p->val.Sprite.getPosition().x + p->val.Width / 2,
+                 p->val.Sprite.getPosition().y + p->val.Height / 2,
+                 playerface.Sprite.getPosition().x + playerface.Width / 2,
+                 playerface.Sprite.getPosition().y + playerface.Height / 2);
+            window.display();
+            p = p->next;
+            sf::sleep(sf::milliseconds(700));
+            continue;
+        }
+        //循环找到这个受害者
+        for (int i = 0; i < r; i++)
+            Head1 = Head1->next;
+        printf("%d\n", CardinFight->length());
+        p->val.HP -= Head1->val.ATK;
+        Head1->val.HP -= p->val.ATK;
+        Draw();
+        Line(p->val.Sprite.getPosition().x + p->val.Width / 2,
+             p->val.Sprite.getPosition().y + p->val.Height / 2,
+             Head1->val.Sprite.getPosition().x + Head1->val.Width / 2,
+             Head1->val.Sprite.getPosition().y + Head1->val.Height / 2);
+        window.display();
+        sf::sleep(sf::milliseconds(700));
+        p = p->next;
+    }
     IsYourRound = true;
     IsRoundChange = true;
     //回合切换后，更新你的战斗次数
@@ -719,7 +772,10 @@ void LeftReleased()
     }
     // 打脸！！！
     if (enemyface.isInclude() && isChooseCard == 2)
+    {
         enemyface.HP -= Head1->val.ATK;
+        --Head1->val.attackTimes;
+    }
     // 当鼠标抓着手牌的时候↑
     Head = CardinFight;
     while (Head)
