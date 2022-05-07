@@ -542,7 +542,17 @@ void Draw()
     // 判定回合改变
     if (IsRoundChange)
         Draw_Round();
-
+    //绘制我的血量，不要被卡牌挡住了
+    c.setRadius(70);
+    c.setOrigin(c.getGlobalBounds().width / 2, c.getGlobalBounds().height / 2);
+    c.setPosition(1145,850);
+    window.draw(c);
+    char test[100];
+    txt.setString(itoa(playerface.HP, test, 10));
+    txt.setColor(sf::Color::Black);
+    txt.setOrigin(txt.getGlobalBounds().width / 2, txt.getGlobalBounds().height / 2);
+    txt.setPosition(c.getPosition());
+    window.draw(txt);
     window.display();
 }
 
