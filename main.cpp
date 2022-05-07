@@ -719,7 +719,10 @@ void LeftReleased()
     }
     // 打脸！！！
     if (enemyface.isInclude() && isChooseCard == 2)
+    {
         enemyface.HP -= Head1->val.ATK;
+        --Head1->val.attackTimes;
+    }
     // 当鼠标抓着手牌的时候↑
     Head = CardinFight;
     while (Head)
