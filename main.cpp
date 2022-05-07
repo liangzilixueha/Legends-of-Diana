@@ -91,7 +91,8 @@ SoundBuffer startM;
 Sound StartM;
 SoundBuffer jr0, jr1, jr2, jr3, jr4, jr5, jr6, jr7;
 Sound JR0, JR1, JR2, JR3, JR4, JR5, JR6, JR7;
-
+SoundBuffer ss0, ss1;
+Sound SS0, SS1;
 //抽牌
 bool NeedNewCard;
 
@@ -243,6 +244,11 @@ void Start()
     JR6.setBuffer(jr6);
     jr7.loadFromFile("data/music/owner/ko no dio da.wav");
     JR7.setBuffer(jr7);
+    // 叔叔音效
+    ss0.loadFromFile("data/music/enemy/CR1.wav");
+    SS0.setBuffer(ss0);
+    ss1.loadFromFile("data/music/enemy/CR2.wav");
+    SS1.setBuffer(ss1);
 
     // 牌库的初始化
     CardinHouse = creat(CardinHouse);
@@ -431,6 +437,12 @@ void Enemy_Action()
                 Head->next->prior = Head;
             }
             Head = Head->next;
+            // 随机播放音频
+            int suijishu = rand() * 2;
+            if (suijishu == 0)
+                SS1.play();
+            else
+                SS0.play();
         }
     }
 
@@ -903,8 +915,6 @@ void LeftReleased()
                     JR6.play();
                 if (Head->val.Order == '7')
                     JR7.play();
-
-                // JR7.play();
             }
             CardinFight->InsertBetween(Head->val);
             // 下面这一串都是为了将这个节点从手牌中删除
