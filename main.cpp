@@ -39,11 +39,11 @@ List *Head, *Head1;
 Card l(2, 2, 3, "Diana");
 // 测试例子2
 Card Base0(1, 2, 3, "n");
-Card Base1(1, 2, 3, "n");
-Card Base2(1, 2, 3, "n");
-Card Base3(1, 2, 3, "nasacasc");
-Card Base4(1, 2, 3, "n");
-Card Base5(1, 2, 3, "n");
+Card Base1(2, 2, 3, "n");
+Card Base2(2, 2, 3, "n");
+Card Base3(2, 2, 3, "nasacasc");
+Card Base4(2, 2, 3, "n");
+Card Base5(2, 2, 3, "n");
 Card Base6(1, 2, 3, "n");
 Card Base7(1, 2, 3, "n");
 // 敌人木人桩
@@ -83,6 +83,7 @@ bool NeedNewCard;
 
 //提示文字代码
 // 1.你已经攻击过一次了！
+// 2.法力水晶不足！
 int alertCode = 0;
 char alertText[100];
 //声明关键模块
@@ -145,6 +146,13 @@ void Alert()
         {
             alertCode = 0;
             strcpy(alertText, "YOU haved Attacked before!!!");
+            sf::sleep(sf::seconds(1));
+            strcpy(alertText, "");
+        }
+        if (alertCode == 2)
+        {
+            alertCode = 0;
+            strcpy(alertText, "YOU haven't enough Power to user it!");
             sf::sleep(sf::seconds(1));
             strcpy(alertText, "");
         }
@@ -666,25 +674,22 @@ void LeftPress()
         IsPressed = true;
     // 确保你只能选择一个卡牌，且是最上面的卡牌
     // 最上面的卡牌：即最后绘制的卡牌
-    if (CrystalCount > 0) // 若卡牌所需法力值小于水晶数，禁止点击（数值策划后需细化）
+    Head = CardHand;
+    while (Head->next)
     {
-        Head = CardHand;
-        while (Head->next)
+        Head = Head->next;
+    }
+    if (isChooseCard == 0) // 鼠标上没有被抓手牌
+    {
+        while (Head)
         {
-            Head = Head->next;
-        }
-        if (isChooseCard == 0) // 鼠标上没有被抓手牌
-        {
-            while (Head)
+            if (Head->val.isInclude())
             {
-                if (Head->val.isInclude())
-                {
-                    Head->val.Hold = 1;
-                    isChooseCard = 1;
-                    break;
-                }
-                Head = Head->prior;
+                Head->val.Hold = 1;
+                isChooseCard = 1;
+                break;
             }
+            Head = Head->prior;
         }
     }
     // 战斗卡牌点击后，产生面对敌方的预攻击直线
@@ -729,8 +734,14 @@ void LeftReleased()
         {
             if (CardinFight->length() >= 7)
                 break;
+            if (CrystalCount - Head->val.Cost < 0)
+            {
+                alertCode = 2;
+                break;
+            }
+            else
+                CrystalCount -= Head->val.Cost;
             CardinFight->InsertBetween(Head->val);
-            CrystalCount--;
             // 下面这一串都是为了将这个节点从手牌中删除
             if (Head->next == NULL)
             {
