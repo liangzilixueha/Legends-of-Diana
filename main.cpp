@@ -39,14 +39,14 @@ List *Head, *Head1;
 // 测试例子1
 Card l(2, 2, 3, "Diana");
 // 测试例子2
-Card Base0(1, 2, 3, "n");
-Card Base1(2, 2, 3, "n");
-Card Base2(2, 2, 3, "n");
-Card Base3(2, 2, 3, "nasacasc");
-Card Base4(2, 2, 3, "n");
-Card Base5(2, 2, 3, "n");
-Card Base6(1, 2, 3, "n");
-Card Base7(1, 2, 3, "n");
+Card Base0(1, 2, 3, "0");
+Card Base1(2, 2, 3, "1");
+Card Base2(2, 2, 3, "2");
+Card Base3(2, 2, 3, "3");
+Card Base4(2, 2, 3, "4");
+Card Base5(2, 2, 3, "5");
+Card Base6(1, 2, 3, "6");
+Card Base7(1, 2, 3, "7");
 // 敌人木人桩
 Card Tree(1000, 4, 1000, "n");
 Card base1(1, 1, 5, "n");
@@ -82,6 +82,8 @@ int CrystalCount; //水晶数量计数
 //声音
 SoundBuffer startM;
 Sound StartM;
+SoundBuffer jr0, jr1, jr2, jr3, jr4, jr5, jr6, jr7;
+Sound JR0, JR1, JR2, JR3, JR4, JR5, JR6, JR7;
 
 //抽牌
 bool NeedNewCard;
@@ -210,9 +212,27 @@ void Start()
     Base6.setSprite("data/img/img_card/base6.png");
     Base7.setSprite("data/img/img_card/base7.png");
 
-    //音效的初始化
+    // 音效的初始化
+    // 开场音效
     startM.loadFromFile("data/music/start/welcome.wav");
     StartM.setBuffer(startM);
+    // 嘉然音效
+    jr0.loadFromFile("data/music/owner/jiaran1.wav");
+    JR0.setBuffer(jr0);
+    jr1.loadFromFile("data/music/owner/jiaran2.wav");
+    JR1.setBuffer(jr1);
+    jr2.loadFromFile("data/music/owner/jiaran3.wav");
+    JR2.setBuffer(jr2);
+    jr3.loadFromFile("data/music/owner/jiaran4.wav");
+    JR3.setBuffer(jr3);
+    jr4.loadFromFile("data/music/owner/jiaran5.wav");
+    JR4.setBuffer(jr4);
+    jr5.loadFromFile("data/music/owner/nanami1.wav");
+    JR5.setBuffer(jr5);
+    jr6.loadFromFile("data/music/owner/nanami2.wav");
+    JR6.setBuffer(jr6);
+    jr7.loadFromFile("data/music/owner/ko no dio da.wav");
+    JR7.setBuffer(jr7);
 
     // 牌库的初始化
     CardinHouse = creat(CardinHouse);
@@ -323,7 +343,7 @@ void Initial_Draw()
     window.display();
     StartM.play();
     // 睡个1秒钟
-    sf::sleep(sf::seconds(1));
+    sf::sleep(sf::seconds(2));
 }
 
 // 改变回合方的提醒
@@ -826,7 +846,27 @@ void LeftReleased()
                 break;
             }
             else
+            {
                 CrystalCount -= Head->val.Cost;
+                if (Head->val.Order == '0')
+                    JR0.play();
+                if (Head->val.Order == '1')
+                    JR1.play();
+                if (Head->val.Order == '2')
+                    JR2.play();
+                if (Head->val.Order == '3')
+                    JR3.play();
+                if (Head->val.Order == '4')
+                    JR4.play();
+                if (Head->val.Order == '5')
+                    JR5.play();
+                if (Head->val.Order == '6')
+                    JR6.play();
+                if (Head->val.Order == '7')
+                    JR7.play();
+
+                //JR7.play();
+            }
             CardinFight->InsertBetween(Head->val);
             // 下面这一串都是为了将这个节点从手牌中删除
             if (Head->next == NULL)
@@ -884,6 +924,7 @@ void LeftReleased()
             Head->val.Hold = 0;
         Head = Head->next;
     }
+
     isChooseCard = 0;
 }
 // 右键单击

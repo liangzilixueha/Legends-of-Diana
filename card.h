@@ -111,6 +111,7 @@ struct Card
     Card() {}
     Card(int, int, int, char *s = "test");
 
+    char Order; //卡牌序号
     int HP;
     int ATK;
     int Cost;
@@ -286,6 +287,7 @@ Card::Card(int cost, int atk, int hp, char *namee)
     moveFlag = 0;
     state = 0;
     attackTimes = 1;
+    Order = *namee;
     //将名字赋值给name
     name = new char[strlen(namee) + 1];
     if (namee[0] != 'n')
