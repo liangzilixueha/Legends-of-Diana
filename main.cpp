@@ -384,8 +384,7 @@ void Start()
     int NoS;
     for (int i = 0; i < 40; i++)
     {
-        // NoS = rand() % 7;
-        NoS = 7;
+        NoS = rand() % 8;
         switch (NoS)
         {
         case 0:
