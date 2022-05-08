@@ -204,7 +204,7 @@ void MyBattlecry(List *p)
     strcpy(s, p->val.name);
     printf("s=%s\n", s);
     //战吼：召唤一个1-1的废物
-    if (!strcmp(s, "0") && CardinFight->length() <= 7)
+    if (!strcmp(s, "0") && CardinFight->length() <= 6)
         CardinFight->Insert(Base7);
     //战吼：随机让一个敌方随从变为1-1
     if (!strcmp(s, "3"))
