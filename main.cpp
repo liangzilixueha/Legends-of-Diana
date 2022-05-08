@@ -47,7 +47,7 @@ Card Base3(2, 2, 3, "3");
 Card Base4(2, 2, 3, "4");
 Card Base5(2, 2, 3, "5");
 Card Base6(1, 2, 3, "6");
-Card Base7(1, 2, 3, "7");
+Card Base7(1, 1, 1, "7");
 // 叔叔的手牌
 Card base1(1, 1, 5, "n");
 Card shu0(1, 2, 3, "0");
@@ -180,6 +180,22 @@ void EnemyDeath(List *p)
 //我方卡牌死亡的特效
 void MyDeath(List *p)
 {
+    char s[100];
+    strcpy(s, p->val.name);
+    printf("s=%s\n", s);
+    //亡语：对方全场扣除一点血量
+    if (!strcmp(s, "1"))
+    {
+        List *pp = EnemyinFight->next;
+        while (pp)
+        {
+            --pp->val.HP;
+            pp = pp->next;
+        }
+    }
+    //亡语：恢复英雄血量等同于自身的攻击值
+    if (!strcmp(s, "5"))
+        playerface.HP += p->val.ATK;
 }
 //我方卡牌的战吼特效
 void MyBattlecry(List *p)
@@ -187,6 +203,30 @@ void MyBattlecry(List *p)
     char s[100];
     strcpy(s, p->val.name);
     printf("s=%s\n", s);
+    //战吼：召唤一个1-1的废物
+    if (!strcmp(s, "0") && CardinFight->length() <= 7)
+        CardinFight->Insert(Base7);
+    //战吼：随机让一个敌方随从变为1-1
+    if (!strcmp(s, "3"))
+    {
+        int r = rand() % EnemyinFight->length();
+        List *pp = EnemyinFight->next;
+        for (int i = 0; i < r; i++)
+        {
+            pp = pp->next;
+        }
+        pp->val.HP = pp->val.ATK = 1;
+    }
+    //战吼：使得全体友方获得一点生命值
+    if (!strcmp(s, "6"))
+    {
+        List *pp = CardinFight->next;
+        while (pp)
+        {
+            ++pp->val.HP;
+            pp = pp->next;
+        }
+    }
 }
 // 画线函数,输入起点，目的是到光标
 void LineTo(double x, double y)
@@ -293,12 +333,21 @@ void Start()
     GStart.Sprite.setScale(2, 2);
 
     //嘉心糖手牌的初始化
+
+    //战吼：召唤一个1-1的废物
     Base0.setSprite("data/img/img_card/base0.png");
+    //亡语：对方全场扣除一点血
     Base1.setSprite("data/img/img_card/base1.png");
+    //对边上两张卡牌造成同等的伤害
     Base2.setSprite("data/img/img_card/base2.png");
+    //战吼：随机让一个敌方随从变为1-1
     Base3.setSprite("data/img/img_card/base3.png");
+    //每回合可以攻击两次
     Base4.setSprite("data/img/img_card/base4.png");
+    Base4.attackTimes = 2;
+    //亡语：恢复英雄血量等同于自身的攻击值
     Base5.setSprite("data/img/img_card/base5.png");
+    //战吼：使得全体友方获得一点生命值
     Base6.setSprite("data/img/img_card/base6.png");
     Base7.setSprite("data/img/img_card/base7.png");
     //叔叔手牌的初始化
@@ -622,6 +671,7 @@ void Enemy_Action()
     while (Head)
     {
         Head->val.attackTimes = 1;
+        if(!strcmp(Head->val.name,"4")) Head->val.attackTimes = 2;
         Head = Head->next;
     }
 }
@@ -1083,6 +1133,13 @@ void LeftReleased()
             }
             EnemyAttacked(Head);
             // ATKfunAnime();
+            if (!strcmp(Head1->val.name, "2"))
+            {
+                if (Head->next)
+                    Head->next->val.HP -= Head1->val.ATK;
+                if (Head->prior)
+                    Head->prior->val.HP -= Head1->val.ATK;
+            }
             Head->val.HP -= Head1->val.ATK;
             Head1->val.HP -= Head->val.ATK;
             //减少你的攻击次数
