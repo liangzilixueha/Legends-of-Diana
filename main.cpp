@@ -52,18 +52,18 @@ Card Base7(1, 2, 3, "7");
 Card base1(1, 1, 5, "n");
 Card shu0(1, 2, 3, "0");
 Card shu1(1, 2, 3, "1");
-Card shu2(1, 2, 3, "2");
-Card shu3(1, 2, 3, "3");
+Card shu2(1, 1, 1, "2");
+Card shu3(1, 1, 1, "3");
 Card shu4(1, 2, 3, "4");
 Card shu5(1, 2, 3, "5");
-Card shu6(1, 2, 3, "6");
+Card shu6(1, 2, 1, "6");
 Card shu7(1, 2, 3, "7");
 
 // 亡语卡牌
 Card deathcard(1, 1, 2, "n");
 // 两张脸
-Card enemyface(-99, -99, 10, "chenrui");
-Card playerface(-99, -99, 10, "jiaxintang");
+Card enemyface(-99, 0, 10, "chenrui");
+Card playerface(-99, -99, 50, "jiaxintang");
 int Game_judge; //判断是胜利还是失败的变量
 // 游戏回合的摆设
 Img YRound, YRound_Down;
@@ -101,6 +101,7 @@ bool NeedNewCard;
 //提示文字代码
 // 1.你已经攻击过一次了！
 // 2.法力水晶不足！
+// 3.你必须攻击具有嘲讽的卡牌
 int alertCode = 0;
 char alertText[100];
 //声明关键模块
@@ -108,7 +109,85 @@ char alertText[100];
 void Draw();
 void Input();
 void Logic();
+void MyBattlecry(List *);
+void EnemyBattlecry(List *);
+void EnemyDeath(List *);
+void MyDeath(List *);
+void EnemyAttacked(List *);
 
+//敌人的受到攻击的特效
+void EnemyAttacked(List *p)
+{
+
+    char s[100];
+    strcpy(s, p->val.name);
+    //何同学,受到攻击获得+1的攻击力
+    if (!strcmp(s, "1"))
+    {
+        ++p->val.ATK;
+    }
+    // nanami：嘲讽：受到攻击获得-1的伤害
+    if (!strcmp(s, "5"))
+    {
+        ++p->val.HP;
+    }
+}
+//敌人卡牌上场的特效
+void EnemyBattlecry(List *p)
+{
+    char s[100];
+    strcpy(s, p->val.name);
+    //顶正：战吼：让你的左右的卡牌获得+1+1
+    if (!strcmp(s, "0"))
+    {
+        if (p->next)
+        {
+            ++p->next->val.HP;
+            //            ++p->next->val.ATK;
+        }
+        if (p->prior)
+        {
+            ++p->prior->val.HP;
+            ++p->prior->val.ATK;
+        }
+    }
+    // vox_en:战吼：额外获得全场卡牌数量的血量
+    if (!strcmp(s, "6"))
+        p->val.HP = p->val.HP + CardinFight->length() + EnemyinFight->length();
+    if (!strcmp(s, "7"))
+        enemyface.ATK += 2;
+}
+//敌人卡牌死亡的特效
+void EnemyDeath(List *p)
+{
+    char s[100];
+    strcpy(s, p->val.name);
+    printf("s=%s\n", s);
+    // lex：亡语：召唤两张1-1的[lex的粉丝]
+    if (!strcmp(s, "2"))
+    {
+        if (EnemyinFight->length() <= 7)
+            EnemyinFight->Insert(shu3);
+        if (EnemyinFight->length() <= 7)
+            EnemyinFight->Insert(shu3);
+    }
+    //上单：亡语：扣除叔叔的血量，与自身攻击数值相等
+    if (!strcmp(s, "4"))
+    {
+        enemyface.HP -= p->val.ATK;
+    }
+}
+//我方卡牌死亡的特效
+void MyDeath(List *p)
+{
+}
+//我方卡牌的战吼特效
+void MyBattlecry(List *p)
+{
+    char s[100];
+    strcpy(s, p->val.name);
+    printf("s=%s\n", s);
+}
 // 画线函数,输入起点，目的是到光标
 void LineTo(double x, double y)
 {
@@ -173,6 +252,13 @@ void Alert()
             sf::sleep(sf::seconds(1));
             strcpy(alertText, "");
         }
+        if (alertCode == 3)
+        {
+            alertCode = 0;
+            strcpy(alertText, "YOU must ATK card WITH taunt!!!");
+            sf::sleep(sf::seconds(1));
+            strcpy(alertText, "");
+        }
     }
 }
 // 决定按钮的状态
@@ -218,10 +304,12 @@ void Start()
     //叔叔手牌的初始化
     shu0.setSprite("data/img/cardsforCR/dinpin.png");
     shu1.setSprite("data/img/cardsforCR/he.png");
+    shu1.Taunt = 1;
     shu2.setSprite("data/img/cardsforCR/LEX.png");
     shu3.setSprite("data/img/cardsforCR/LV0.png");
     shu4.setSprite("data/img/cardsforCR/mengguren.png");
     shu5.setSprite("data/img/cardsforCR/nanami.png");
+    shu5.Taunt = 1;
     shu6.setSprite("data/img/cardsforCR/vox.png");
     shu7.setSprite("data/img/cardsforCR/vvip.png");
 
@@ -296,7 +384,8 @@ void Start()
     int NoS;
     for (int i = 0; i < 40; i++)
     {
-        NoS = rand() % 7;
+        // NoS = rand() % 7;
+        NoS = 7;
         switch (NoS)
         {
         case 0:
@@ -387,7 +476,7 @@ void Initial_Draw()
     // 画两个脸
     window.draw(enemyface.Sprite);
     window.draw(playerface.Sprite);
-    // enemyface.txtFollow();
+    enemyface.txtFollow();
     // playerface.txtFollow();
     window.draw(GStart.Sprite);
     // 画法力水晶背景
@@ -451,6 +540,7 @@ void Draw_Round()
 // 敌人的操作
 void Enemy_Action()
 {
+    sf::sleep(sf::seconds(1));
     // 以下操作为敌人的操作
     // 从库中抽取牌
     Head = CardinShu->next;
@@ -458,6 +548,7 @@ void Enemy_Action()
     // 将这个卡牌插入到手牌当中
     if (Head1->length() < 7)
     {
+        EnemyBattlecry(Head);
         Head1->Insert(Head->val);
         // 下面这一串都是为了将这个节点从牌库中删除
         if (Head->next == NULL)
@@ -548,7 +639,7 @@ void Draw()
     // 画两个脸
     window.draw(enemyface.Sprite);
     window.draw(playerface.Sprite);
-    // enemyface.txtFollow();
+    enemyface.txtFollow();
     // playerface.txtFollow();
 
     // 画法力水晶背景
@@ -825,12 +916,7 @@ void Logic()
         // 小心把头节点给删除了
         if (Head->val.HP <= 0 && Head->val.Cost > 0)
         {
-            if (strcmp(Head->val.name, "fff") == 0)
-            {
-                CardinFight->Insert(deathcard);
-                CardinFight->Insert(deathcard);
-            }
-
+            MyDeath(Head);
             Dead->Insert(Head->val);
             if (Head->next == NULL)
                 Head->prior->next = Head->next;
@@ -848,6 +934,7 @@ void Logic()
         // 小心把头节点给删除了
         if (Head->val.HP <= 0 && Head->val.Cost > 0)
         {
+            EnemyDeath(Head);
             Dead->Insert(Head->val);
             if (Head->next == NULL)
                 Head->prior->next = Head->next;
@@ -954,6 +1041,7 @@ void LeftReleased()
                 if (Head->val.Order == '7')
                     JR7.play();
             }
+            MyBattlecry(Head);
             CardinFight->InsertBetween(Head->val);
             // 下面这一串都是为了将这个节点从手牌中删除
             if (Head->next == NULL)
@@ -988,6 +1076,13 @@ void LeftReleased()
     {
         if (Head->val.isInclude())
         {
+            //如果场上有嘲讽的敌人，那么就不能攻击
+            if (EnemyinFight->isIncludeTaunt() && !Head->val.Taunt)
+            {
+                alertCode = 3;
+                break;
+            }
+            EnemyAttacked(Head);
             // ATKfunAnime();
             Head->val.HP -= Head1->val.ATK;
             Head1->val.HP -= Head->val.ATK;
@@ -998,10 +1093,17 @@ void LeftReleased()
         Head = Head->next;
     }
     // 打脸！！！
+    // 必须满足：包含脸，选中攻击卡牌，场上无嘲讽
     if (enemyface.isInclude() && isChooseCard == 2)
     {
-        enemyface.HP -= Head1->val.ATK;
-        --Head1->val.attackTimes;
+        if (EnemyinFight->isIncludeTaunt() == 0)
+        {
+            enemyface.HP -= Head1->val.ATK;
+            Head1->val.HP -= enemyface.ATK;
+            --Head1->val.attackTimes;
+        }
+        else
+            alertCode = 3;
     }
     // 当鼠标抓着手牌的时候↑
     Head = CardinFight;

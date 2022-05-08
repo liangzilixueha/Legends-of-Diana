@@ -32,6 +32,7 @@ extern "C"
     void InsertBetween(Card);
     int length();
     void print();
+    int isIncludeTaunt();
 };
 //卡牌的长度
 //初始的长度为0
@@ -101,6 +102,18 @@ void List::print()
         p = p->next;
     }
     printf("]\n");
+}
+//该链表的卡牌下包含嘲讽么？
+//如果包含，则返回1，否则返回0
+int List::isIncludeTaunt(){
+    List *p=this;
+    while(p){
+        if(p->val.Taunt){
+            return 1;
+        }
+        p=p->next;
+    }
+    return 0;
 }
 #ifdef __cpluscplus
 #endif

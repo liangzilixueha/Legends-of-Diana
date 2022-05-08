@@ -180,6 +180,14 @@ void Card::txtFollow()
         text.setColor(sf::Color::White);
     int txtsize = 40;
     char s[99];
+    if (stringcmp(name, "chenrui") == 0)
+    {
+        text.setString(itoa(ATK, s, 10));
+        text.setPosition(Sprite.getPosition().x, Sprite.getPosition().y+Height/2);
+        text.setCharacterSize(40);
+        window.draw(text);
+        return;
+    }
     //消耗值
     if (Cost != -99)
     {
@@ -202,10 +210,10 @@ void Card::txtFollow()
     text.setCharacterSize(txtsize);
     window.draw(text);
     //名字
-    text.setString(name);
-    text.setCharacterSize(20);
-    text.setPosition(Sprite.getPosition().x + Width / 2 - 25, Sprite.getPosition().y + Height / 2);
-    window.draw(text);
+    // text.setString(name);
+    // text.setCharacterSize(20);
+    // text.setPosition(Sprite.getPosition().x + Width / 2 - 25, Sprite.getPosition().y + Height / 2);
+    // window.draw(text);
 }
 //这个是移动函数
 //其中speed是移动速度，默认为40.数值越大越快
