@@ -204,7 +204,7 @@ void MyBattlecry(List *p)
     strcpy(s, p->val.name);
     printf("s=%s\n", s);
     //战吼：召唤一个1-1的废物
-    if (!strcmp(s, "0") && CardinFight->length() <= 6)
+    if (!strcmp(s, "0") && CardinFight->length() < 7)
         CardinFight->Insert(Base7);
     //战吼：随机让一个敌方随从变为1-1
     if (!strcmp(s, "3"))
@@ -671,7 +671,8 @@ void Enemy_Action()
     while (Head)
     {
         Head->val.attackTimes = 1;
-        if(!strcmp(Head->val.name,"4")) Head->val.attackTimes = 2;
+        if (!strcmp(Head->val.name, "4"))
+            Head->val.attackTimes = 2;
         Head = Head->next;
     }
 }
@@ -1137,8 +1138,12 @@ void LeftReleased()
             {
                 if (Head->next)
                     Head->next->val.HP -= Head1->val.ATK;
+                if (Head->next->val.HP < 0)
+                    Head->next->val.HP = 0;
                 if (Head->prior)
                     Head->prior->val.HP -= Head1->val.ATK;
+                if (Head->prior->val.HP < 0)
+                    Head->prior->val.HP = 0;
             }
             Head->val.HP -= Head1->val.ATK;
             Head1->val.HP -= Head->val.ATK;
